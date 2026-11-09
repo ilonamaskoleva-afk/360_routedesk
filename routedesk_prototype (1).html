@@ -1,121 +1,1459 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>RouteDesk — интерактивный прототип</title>
-<style>
-:root{--ink:#171b45;--muted:#73799f;--purple:#5638dc;--purple2:#765df1;--blue:#4389f5;--pale:#f2f1ff;--line:#e7e8fb;--green:#18b981;--orange:#f59a37;--red:#ef626e;--shadow:0 18px 50px rgba(65,66,145,.13)}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#f4f3ff,#e9edff);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink)}button,input,textarea,select{font:inherit}button{cursor:pointer}
-.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr;gap:24px;padding:24px;max-width:1500px;margin:auto}.sidebar{background:#222653;color:#fff;border-radius:24px;padding:24px 16px;display:flex;flex-direction:column;min-height:calc(100vh - 48px);box-shadow:var(--shadow)}.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;padding:4px 10px 30px}.brandmark{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#8e7aff,#4d31d3);display:grid;place-items:center;font-size:20px}.nav{display:grid;gap:5px;max-height:72vh;overflow:auto}.nav button{padding:10px 12px;font-size:13px}.nav button{border:0;background:transparent;color:#d8dafa;padding:13px 12px;border-radius:13px;text-align:left;display:flex;gap:12px;align-items:center;font-size:14px}.nav button.active,.nav button:hover{background:linear-gradient(90deg,#654ce6,#7762ee);color:#fff}.nav .ico{width:20px;text-align:center;font-size:17px}.user{margin-top:auto;border-top:1px solid #414574;padding:18px 8px 0;display:flex;align-items:center;gap:10px;font-size:13px}.avatar{width:34px;height:34px;border-radius:50%;background:#8b79ef;color:#fff;display:grid;place-items:center;font-weight:700}.user small{display:block;color:#bfc3e8;margin-top:3px}
-main{min-width:0}.topbar{display:flex;align-items:center;justify-content:space-between;margin:4px 4px 20px}.topbar h1{font-size:24px;margin:0}.topbar p{margin:5px 0 0;color:var(--muted);font-size:13px}.top-actions{display:flex;gap:10px}.chip,.ghost{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:12px;padding:10px 13px}.primary{border:0;border-radius:13px;background:linear-gradient(100deg,var(--purple),var(--purple2));color:white;padding:13px 18px;font-weight:700;box-shadow:0 7px 16px #6247df30}.primary:hover{filter:brightness(1.05);transform:translateY(-1px)}.screen{display:none;animation:fade .22s ease}.screen.active{display:block}@keyframes fade{from{opacity:.4;transform:translateY(5px)}to{opacity:1;transform:none}}
-.grid{display:grid;gap:16px}.kpis{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px}.card{background:rgba(255,255,255,.94);border:1px solid #ebeafd;border-radius:19px;padding:18px;box-shadow:0 8px 25px rgba(76,77,151,.07)}.kpi .symbol{width:38px;height:38px;border-radius:12px;background:#eff1ff;color:var(--blue);display:grid;place-items:center;font-size:19px}.kpi strong{display:block;font-size:26px;margin:10px 0 3px}.muted{color:var(--muted)}.small{font-size:12px}.positive{color:var(--green)}.negative{color:var(--red)}.two{grid-template-columns:1.25fr .9fr}.three{grid-template-columns:repeat(3,1fr)}.card h3{font-size:15px;margin:0 0 14px}.chart{height:190px;width:100%;display:block}.donut-wrap{display:flex;align-items:center;gap:20px}.donut{width:142px;height:142px;border-radius:50%;background:conic-gradient(#5638dc 0 32%,#4389f5 32% 60%,#f7b24b 60% 80%,#e88cae 80% 92%,#8ac9d0 92% 100%);position:relative;flex:none}.donut:after{content:'248';position:absolute;inset:27px;background:#fff;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:22px}.legend{display:grid;gap:10px;font-size:12px}.legend span{display:flex;align-items:center;gap:8px}.dot{width:9px;height:9px;border-radius:50%;display:inline-block}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.section-title{font-size:18px;margin:0 0 15px}.field{display:grid;gap:7px;margin-bottom:15px}.field label{font-size:13px;font-weight:650}.field input,.field textarea,.field select{width:100%;border:1px solid #dfe1f8;border-radius:13px;padding:13px;background:#fbfbff;color:var(--ink);outline:none}.field textarea{min-height:120px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:#8978f1;box-shadow:0 0 0 3px #8c7bf122}.field-hint{font-size:11px;color:var(--muted)}.inline-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.upload{border:1.5px dashed #b9b5f2;border-radius:14px;padding:20px;text-align:center;background:#faf9ff;color:#6c60c7}.upload input{display:none}.result{background:linear-gradient(135deg,#f2efff,#edf4ff);border:1px solid #e3defe;border-radius:17px;padding:17px}.result-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}.check{width:42px;height:42px;border-radius:50%;background:#d9f8ec;color:#12a979;display:grid;place-items:center;font-size:23px}.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.result-grid div{background:#ffffffb8;padding:12px;border-radius:12px}.result-grid small{color:var(--muted);display:block;margin-bottom:5px}.pill{display:inline-flex;align-items:center;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:700;background:#eeeaff;color:#5942d4}.pill.green{background:#e0f8ee;color:#119b70}.pill.orange{background:#fff1dd;color:#c47a18}.pill.red{background:#ffe8eb;color:#d44d60}.table{width:100%;border-collapse:collapse;font-size:13px}.table th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;padding:12px 8px;border-bottom:1px solid var(--line)}.table td{padding:14px 8px;border-bottom:1px solid #f0f0fa}.table tr:last-child td{border:0}.ticket{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid #f0f0fa}.ticket:last-child{border:0}.ticket-icon{width:38px;height:38px;border-radius:12px;background:#f0efff;color:#5d48dc;display:grid;place-items:center;flex:none}.ticket p{margin:5px 0;color:var(--muted);font-size:12px}.timeline{position:relative;padding-left:28px}.timeline:before{content:'';position:absolute;left:10px;top:8px;bottom:8px;width:2px;background:#dedafa}.step{position:relative;padding:0 0 22px}.step:before{content:'';position:absolute;left:-24px;top:2px;width:12px;height:12px;border:3px solid #fff;border-radius:50%;background:#6954e8;box-shadow:0 0 0 1px #b7aefa}.step.done:before{background:var(--green)}.step strong{font-size:13px}.step p{margin:4px 0;color:var(--muted);font-size:12px}.barline{height:8px;border-radius:99px;background:#eeedfb;overflow:hidden;flex:1}.barline i{height:100%;display:block;border-radius:99px;background:linear-gradient(90deg,#5940df,#8d7cf4)}.metric-line{display:flex;align-items:center;gap:12px;margin:14px 0;font-size:12px}.metric-line b{width:90px}.metric-line em{font-style:normal;width:34px;text-align:right}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.tabs button{border:1px solid var(--line);border-radius:999px;padding:9px 13px;background:#fff;color:var(--muted);font-size:12px}.tabs button.active{background:var(--purple);color:#fff;border-color:var(--purple)}.toast{position:fixed;right:25px;bottom:25px;background:#222653;color:white;padding:14px 18px;border-radius:13px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:none}.mobile-nav{display:none}
-@media(max-width:950px){.app{grid-template-columns:1fr;padding:14px}.sidebar{display:none}.topbar{margin:5px 3px 15px}.mobile-nav{display:flex;position:sticky;bottom:10px;z-index:5;background:#242852;color:white;border-radius:18px;padding:8px;justify-content:space-around;box-shadow:var(--shadow);margin-top:16px}.mobile-nav button{border:0;background:transparent;color:#d6d8f4;padding:9px 7px;border-radius:12px;font-size:11px}.mobile-nav button.active{background:#674ee5;color:white}.kpis{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.three{grid-template-columns:1fr 1fr}}
-@media(max-width:560px){.app{padding:10px}.topbar h1{font-size:20px}.topbar p{font-size:11px}.top-actions .chip{display:none}.card{padding:14px;border-radius:16px}.kpis{gap:9px}.kpi strong{font-size:22px}.kpi{padding:13px}.three{grid-template-columns:1fr}.inline-fields,.result-grid{grid-template-columns:1fr}.table-wrap{overflow:auto}.table{min-width:600px}.donut-wrap{gap:12px}.donut{width:118px;height:118px}.donut:after{inset:23px;font-size:19px}.mobile-nav button{font-size:10px}.top-actions .primary{padding:10px 12px;font-size:12px}}
-</style>
-</head>
-<body>
-<div class="app">
-<aside class="sidebar">
-  <div class="brand"><span class="brandmark">ϟ</span> RouteDesk</div>
-  <nav class="nav" id="sideNav">
-    <button class="active" data-screen="dashboard"><span class="ico">⌂</span>Главная</button>
-    <button data-screen="create"><span class="ico">＋</span>Создать заявку</button>
-    <button data-screen="requests"><span class="ico">▤</span>Мои заявки</button>
-    <button data-screen="history"><span class="ico">◷</span>История обработки</button>
-    <button data-screen="manager"><span class="ico">▥</span>Управленческая панель</button>
-    <button data-screen="departments"><span class="ico">▦</span>Подразделения</button>
-    <button data-screen="workload"><span class="ico">⌁</span>Нагрузка и узкие места</button>
-    <button data-screen="ai"><span class="ico">✧</span>Качество AI</button>
-    <button data-screen="classification"><span class="ico">✓</span>Результат AI</button>
-    <button data-screen="inbox"><span class="ico">▣</span>Входящие исполнителя</button>
-    <button data-screen="executor"><span class="ico">⚙</span>Работа исполнителя</button>
-    <button data-screen="reroute"><span class="ico">⇄</span>Перенаправление</button>
-    <button data-screen="complete"><span class="ico">☑</span>Завершение заявки</button>
-    <button data-screen="feedback"><span class="ico">☆</span>Оценка решения</button>
-    <button data-screen="notifications"><span class="ico">♧</span>Уведомления</button>
-    <button data-screen="profile"><span class="ico">◉</span>Профиль и настройки</button>
-    <button data-screen="reports"><span class="ico">▤</span>Отчёты</button>
-  </nav>
-  <div class="user"><div class="avatar">ИИ</div><div>Иван Иванов<small>Сотрудник · Демо-режим</small></div></div>
-</aside>
-<main>
-  <header class="topbar"><div><h1 id="pageTitle">Главная</h1><p id="pageSubtitle">Ваши заявки и актуальная информация</p></div><div class="top-actions"><button class="chip" onclick="toast('Период: последние 30 дней')">За 30 дней⌄</button><button class="primary" onclick="showScreen('create')">＋ Создать заявку</button></div></header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RouteDesk — Intelligent Internal Process Desk</title>
+    <style>
+      :root {
+        --bg: #f4f5ff;
+        --bg-2: #edf5ff;
+        --panel: rgba(255,255,255,0.96);
+        --panel-strong: #ffffff;
+        --line: #e7e9fb;
+        --ink: #191d4d;
+        --ink-2: #59618c;
+        --purple: #5a4ae3;
+        --purple-2: #7a68ff;
+        --blue: #3a8ef6;
+        --cyan: #2ec4d6;
+        --green: #1ab77d;
+        --green-soft: #e8faf4;
+        --amber: #f59d3a;
+        --amber-soft: #fff2df;
+        --red: #ef5c5c;
+        --red-soft: #ffe8e9;
+        --shadow: 0 22px 48px rgba(74, 77, 140, 0.12);
+      }
 
-  <section class="screen active" id="dashboard">
-    <div class="grid kpis">
-      <div class="card kpi"><div class="symbol">▤</div><strong id="totalKpi">248</strong><span class="muted small">Всего заявок</span></div>
-      <div class="card kpi"><div class="symbol" style="color:var(--green)">✓</div><strong>220</strong><span class="muted small">Решено</span></div>
-      <div class="card kpi"><div class="symbol" style="color:var(--orange)">⇄</div><strong>23</strong><span class="muted small">Перенаправлений</span></div>
-      <div class="card kpi"><div class="symbol">◷</div><strong>2.4 ч</strong><span class="muted small">Среднее время решения</span></div>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; min-height: 100%; font-family: Inter, "Segoe UI", Arial, sans-serif; background: linear-gradient(135deg, var(--bg), var(--bg-2)); color: var(--ink); }
+      body { min-height: 100vh; }
+      button, input, textarea, select { font: inherit; }
+      a { color: inherit; text-decoration: none; }
+
+      .app {
+        max-width: 1500px;
+        margin: 0 auto;
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        gap: 22px;
+        padding: 22px;
+      }
+
+      .sidebar {
+        background: linear-gradient(180deg, #1f274f 0%, #232a5a 100%);
+        color: #fff;
+        border-radius: 28px;
+        padding: 24px 18px 18px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+        font-size: 2rem;
+        letter-spacing: -0.06em;
+        margin-bottom: 14px;
+        padding: 8px 8px 18px;
+        border-bottom: 1px solid rgba(255,255,255,0.09);
+      }
+
+      .brand-mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #8f7dff, #5d6bff);
+        box-shadow: inset 0 0 16px rgba(255,255,255,0.25);
+        font-size: 1.2rem;
+      }
+
+      .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .nav button,
+      .mobile-nav button {
+        appearance: none;
+        background: transparent;
+        border: 1px solid transparent;
+        color: rgba(255,255,255,0.82);
+        border-radius: 12px;
+        padding: 11px 12px;
+        text-align: left;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.2s ease;
+      }
+
+      .nav button:hover,
+      .mobile-nav button:hover { background: rgba(255,255,255,0.04); }
+      .nav button.active {
+        background: rgba(143,125,255,0.25);
+        border-color: rgba(143,125,255,0.35);
+        color: #fff;
+      }
+      .nav .ico { width: 18px; text-align: center; opacity: 0.9; }
+
+      .user {
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 12px 6px;
+        border-top: 1px solid rgba(255,255,255,0.09);
+      }
+      .avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 13px;
+        background: linear-gradient(135deg, #a9b5ff, #6d7cff);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+      }
+      .user small {
+        display: block;
+        margin-top: 2px;
+        color: rgba(255,255,255,0.68);
+        font-size: 0.75rem;
+      }
+
+      main {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin: 8px 4px 18px;
+      }
+      .topbar h1 {
+        margin: 0;
+        font-size: clamp(1.5rem, 2vw, 2.15rem);
+        letter-spacing: -0.05em;
+      }
+      .topbar p { margin: 8px 0 0; color: var(--ink-2); }
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .chip,
+      .pill,
+      .ghost,
+      .primary,
+      .secondary,
+      .tag {
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--ink);
+        padding: 9px 12px;
+        font-weight: 700;
+      }
+      .chip, .pill { font-size: 0.8rem; }
+      .ghost {
+        background: transparent;
+        border-color: rgba(90,74,227,0.2);
+        color: var(--purple);
+      }
+      .primary {
+        background: linear-gradient(135deg, var(--purple), var(--purple-2));
+        color: white;
+        border: none;
+        box-shadow: 0 12px 22px rgba(90,74,227,0.28);
+      }
+      .secondary {
+        background: rgba(58,142,246,0.08);
+        border-color: rgba(58,142,246,0.15);
+        color: var(--blue);
+      }
+      .tag {
+        font-size: 0.74rem;
+        font-weight: 700;
+        border: none;
+        padding: 7px 10px;
+      }
+      .tag.green { background: var(--green-soft); color: var(--green); }
+      .tag.orange { background: var(--amber-soft); color: var(--amber); }
+      .tag.red { background: var(--red-soft); color: var(--red); }
+      .tag.blue { background: rgba(58,142,246,0.1); color: var(--blue); }
+
+      .screen {
+        display: none;
+      }
+      .screen.active { display: block; }
+
+      .grid {
+        display: grid;
+        gap: 18px;
+      }
+      .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 18px 18px 16px;
+        box-shadow: 0 1px 0 rgba(18,24,68,0.02);
+      }
+      .card h3 {
+        margin: 0 0 12px;
+        font-size: 1.1rem;
+        letter-spacing: -0.03em;
+      }
+
+      .kpis {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .kpi {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .kpi .symbol {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        font-size: 1.5rem;
+        background: rgba(90,74,227,0.09);
+        color: var(--purple);
+      }
+      .kpi strong {
+        display: block;
+        font-size: clamp(1.4rem, 2vw, 2.2rem);
+        letter-spacing: -0.08em;
+        line-height: 1;
+      }
+      .muted { color: var(--ink-2); }
+      .small { font-size: 0.8rem; }
+      .kpi .meta { display: flex; flex-direction: column; }
+
+      .head-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .chart {
+        width: 100%;
+        height: 200px;
+        border-radius: 16px;
+        background: linear-gradient(180deg, rgba(90,74,227,0.04), rgba(58,142,246,0.01));
+      }
+      .donut-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-top: 8px;
+      }
+      .donut {
+        width: 170px;
+        height: 170px;
+        border-radius: 50%;
+        background: conic-gradient(#7a68ff 0 42%, #3a8ef6 42% 72%, #2ec4d6 72% 88%, #f59d3a 88% 100%);
+        position: relative;
+        display: grid;
+        place-items: center;
+      }
+      .donut::before {
+        content: "";
+        width: 100px;
+        height: 100px;
+        background: #fff;
+        border-radius: 50%;
+        position: absolute;
+      }
+      .donut-center {
+        position: absolute;
+        font-size: 1.3rem;
+        font-weight: 800;
+        letter-spacing: -0.05em;
+      }
+      .legend {
+        display: grid;
+        gap: 12px;
+        min-width: 160px;
+      }
+      .legend-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        color: var(--ink-2);
+      }
+      .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      .table th, .table td {
+        text-align: left;
+        padding: 11px 10px;
+        border-bottom: 1px solid var(--line);
+      }
+      .table th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-2); }
+      .ticket-status { display: inline-flex; align-items: center; gap: 7px; }
+      .ticket-status::before {
+        content: "";
+        width: 9px; height: 9px; border-radius: 50%;
+        background: var(--green);
+      }
+      .ticket-status.warn::before { background: var(--amber); }
+      .ticket-status.alert::before { background: var(--red); }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .field label {
+        font-size: 0.8rem;
+        color: var(--ink-2);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      textarea, select, input[type="text"], input[type="file"] {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: #fff;
+        border: 1px solid var(--line);
+        color: var(--ink);
+      }
+      textarea {
+        min-height: 146px;
+        resize: vertical;
+      }
+      .meta-block { display: grid; gap: 12px; }
+      .timeline {
+        display: grid;
+        gap: 14px;
+        margin-top: 12px;
+      }
+      .timeline-step {
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: rgba(90,74,227,0.02);
+        display: flex;
+        gap: 10px;
+      }
+      .timeline-step .num {
+        width: 26px; height: 26px;
+        border-radius: 9px;
+        display: grid; place-items: center;
+        background: rgba(90,74,227,0.12);
+        color: var(--purple);
+        font-weight: 800;
+      }
+      .timeline-step p { margin: 4px 0 0; color: var(--ink-2); }
+
+      .result-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .check {
+        width: 44px; height: 44px;
+        border-radius: 14px;
+        display: grid; place-items: center;
+        background: rgba(26,183,125,0.12);
+        color: var(--green);
+        font-size: 1.4rem;
+        font-weight: 800;
+      }
+      .confidence-bar {
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(90,74,227,0.08);
+        overflow: hidden;
+        margin-top: 8px;
+      }
+      .confidence-bar span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--green), var(--blue));
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap: 12px;
+      }
+      .mini-stat {
+        padding: 14px 12px;
+        border-radius: 15px;
+        border: 1px solid var(--line);
+        background: rgba(90,74,227,0.02);
+      }
+      .mini-stat strong { display: block; font-size: 1.35rem; letter-spacing: -0.06em; }
+      .mini-stat small { color: var(--ink-2); }
+
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .tabs button {
+        background: transparent;
+        border: 1px solid var(--line);
+        color: var(--ink-2);
+        border-radius: 10px;
+        padding: 9px 12px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .tabs button.active {
+        background: rgba(90,74,227,0.08);
+        color: var(--purple);
+        border-color: rgba(90,74,227,0.2);
+      }
+
+      .list {
+        display: grid;
+        gap: 12px;
+      }
+      .list-item {
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.7);
+        border-radius: 16px;
+        padding: 14px 16px;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+      }
+      .list-item strong { font-size: 0.98rem; }
+      .list-item p { margin: 6px 0 0; color: var(--ink-2); }
+      .list-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: rgba(25,29,77,0.94);
+        color: white;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-weight: 600;
+        transform: translateY(20px);
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.2s ease;
+        box-shadow: 0 18px 34px rgba(25,29,77,0.28);
+      }
+      .toast.show { opacity: 1; transform: translateY(0); }
+
+      .mobile-nav {
+        display: none;
+        position: sticky;
+        bottom: 12px;
+        margin-top: 16px;
+        background: rgba(31,39,79,0.96);
+        border-radius: 14px;
+        padding: 8px 10px;
+        overflow-x: auto;
+      }
+      .mobile-nav .inner { display: grid; grid-template-columns: repeat(4, minmax(72px, 1fr)); gap: 6px; }
+      .mobile-nav button {
+        color: rgba(255,255,255,0.8);
+        background: transparent;
+        border: none;
+        padding: 8px 6px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+      .mobile-nav button.active { background: rgba(143,125,255,0.24); }
+
+      @media (max-width: 1100px) {
+        .app { grid-template-columns: 1fr; }
+        .sidebar { display: none; }
+        .mobile-nav { display: block; }
+      }
+      @media (max-width: 700px) {
+        .app { padding: 14px; gap: 14px; }
+        .topbar { margin-bottom: 12px; }
+        .grid.two, .grid.three, .grid.four, .kpis { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand"><span class="brand-mark">ϟ</span> RouteDesk</div>
+        <nav class="nav" id="sideNav">
+          <button class="active" data-screen="dashboard"><span class="ico">⌂</span>Главная</button>
+          <button data-screen="create"><span class="ico">＋</span>Создать заявку</button>
+          <button data-screen="requests"><span class="ico">▤</span>Мои заявки</button>
+          <button data-screen="history"><span class="ico">◷</span>История</button>
+          <button data-screen="manager"><span class="ico">▥</span>Панель</button>
+          <button data-screen="departments"><span class="ico">▦</span>Подразделения</button>
+          <button data-screen="workload"><span class="ico">⌁</span>Нагрузка</button>
+          <button data-screen="ai"><span class="ico">✧</span>AI Quality</button>
+          <button data-screen="classification"><span class="ico">✓</span>AI Result</button>
+          <button data-screen="inbox"><span class="ico">▣</span>Входящие</button>
+          <button data-screen="executor"><span class="ico">⚙</span>Исполнитель</button>
+          <button data-screen="reroute"><span class="ico">⇄</span>Перенаправление</button>
+          <button data-screen="complete"><span class="ico">☑</span>Завершение</button>
+          <button data-screen="feedback"><span class="ico">☆</span>Оценка</button>
+          <button data-screen="notifications"><span class="ico">♧</span>Уведомления</button>
+          <button data-screen="reports"><span class="ico">▤</span>Отчёты</button>
+        </nav>
+        <div class="user">
+          <div class="avatar">ИИ</div>
+          <div>
+            Иван Иванов
+            <small>Сотрудник · Демо-режим</small>
+          </div>
+        </div>
+      </aside>
+
+      <main>
+        <header class="topbar">
+          <div>
+            <h1 id="pageTitle">Главная</h1>
+            <p id="pageSubtitle">Интеллектуальная маршрутизация внутренних процессов</p>
+          </div>
+          <div class="top-actions">
+            <button class="chip">Сентябрь 2026</button>
+            <button class="chip">SLA 96%</button>
+            <button class="primary" onclick="showScreen('create')">＋ Создать заявку</button>
+          </div>
+        </header>
+
+        <section class="screen active" id="dashboard">
+          <div class="grid kpis">
+            <div class="card kpi">
+              <div class="symbol">▤</div>
+              <div class="meta">
+                <strong id="totalKpi">248</strong>
+                <span class="muted small">Всего заявок</span>
+              </div>
+            </div>
+            <div class="card kpi">
+              <div class="symbol" style="background: rgba(26,183,125,0.12); color: var(--green);">✓</div>
+              <div class="meta">
+                <strong id="resolvedKpi">220</strong>
+                <span class="muted small">Решено</span>
+              </div>
+            </div>
+            <div class="card kpi">
+              <div class="symbol" style="background: rgba(245,157,58,0.12); color: var(--amber);">⇄</div>
+              <div class="meta">
+                <strong id="reroutesKpi">23</strong>
+                <span class="muted small">Перенаправлений</span>
+              </div>
+            </div>
+            <div class="card kpi">
+              <div class="symbol" style="background: rgba(58,142,246,0.12); color: var(--blue);">◷</div>
+              <div class="meta">
+                <strong id="timeKpi">2.4 ч</strong>
+                <span class="muted small">Среднее время</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid two" style="margin-top: 18px;">
+            <div class="card">
+              <div class="head-line">
+                <h3>Динамика заявок</h3>
+                <span class="tag blue">Последние 7 дней</span>
+              </div>
+              <svg class="chart" viewBox="0 0 600 210" preserveAspectRatio="none" aria-label="chart">
+                <defs>
+                  <linearGradient id="gradientA" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#8a79ff" stop-opacity="0.5" />
+                    <stop offset="100%" stop-color="#8a79ff" stop-opacity="0.02" />
+                  </linearGradient>
+                </defs>
+                <g opacity="0.38" stroke="#dfe3ff" stroke-width="1">
+                  <line x1="20" y1="20" x2="580" y2="20"/>
+                  <line x1="20" y1="70" x2="580" y2="70"/>
+                  <line x1="20" y1="120" x2="580" y2="120"/>
+                  <line x1="20" y1="170" x2="580" y2="170"/>
+                </g>
+                <path d="M20 150 C 85 110, 120 142, 170 122 S 265 80, 310 95 S 410 160, 430 145 S 500 80, 580 58 L580 190 L20 190 Z" fill="url(#gradientA)"/>
+                <path d="M20 150 C 85 110, 120 142, 170 122 S 265 80, 310 95 S 410 160, 430 145 S 500 80, 580 58" fill="none" stroke="#5a4ae3" stroke-width="4" stroke-linecap="round"/>
+                <g fill="#5a4ae3" font-size="11" font-family="Segoe UI, sans-serif">
+                  <text x="25" y="195">Пн</text>
+                  <text x="110" y="195">Вт</text>
+                  <text x="195" y="195">Ср</text>
+                  <text x="280" y="195">Чт</text>
+                  <text x="365" y="195">Пт</text>
+                  <text x="450" y="195">Сб</text>
+                  <text x="535" y="195">Вс</text>
+                </g>
+              </svg>
+            </div>
+
+            <div class="card">
+              <div class="head-line">
+                <h3>Распределение по категориям</h3>
+                <span class="tag orange">По типам обращений</span>
+              </div>
+              <div class="donut-wrap">
+                <div class="donut">
+                  <div class="donut-center">42%</div>
+                </div>
+                <div class="legend">
+                  <div class="legend-row"><span><i class="dot" style="background:#7a68ff"></i>IT</span><strong>42%</strong></div>
+                  <div class="legend-row"><span><i class="dot" style="background:#3a8ef6"></i>АХО</span><strong>24%</strong></div>
+                  <div class="legend-row"><span><i class="dot" style="background:#2ec4d6"></i>Кадры</span><strong>18%</strong></div>
+                  <div class="legend-row"><span><i class="dot" style="background:#f59d3a"></i>Бухгалтерия</span><strong>16%</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 18px;">
+            <div class="head-line">
+              <h3>Последние заявки</h3>
+              <button class="ghost" onclick="showScreen('requests')">Все заявки →</button>
+            </div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>№</th>
+                  <th>Категория</th>
+                  <th>Подразделение</th>
+                  <th>Статус</th>
+                  <th>Время</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>#2487</td>
+                  <td>IT</td>
+                  <td>Техническая поддержка</td>
+                  <td><span class="ticket-status">В работе</span></td>
+                  <td>28 мин</td>
+                </tr>
+                <tr>
+                  <td>#2486</td>
+                  <td>АХО</td>
+                  <td>Администрация</td>
+                  <td><span class="ticket-status warn">На проверке</span></td>
+                  <td>1 ч 17 мин</td>
+                </tr>
+                <tr>
+                  <td>#2485</td>
+                  <td>Кадры</td>
+                  <td>HR</td>
+                  <td><span class="ticket-status">Решено</span></td>
+                  <td>2 ч 08 мин</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="screen" id="create">
+          <div class="grid two">
+            <div class="card">
+              <div class="head-line">
+                <h3>Создание заявки</h3>
+                <button class="tag blue" onclick="showScreen('dashboard')">Панель</button>
+              </div>
+              <div class="field" style="margin-bottom: 14px;">
+                <label>Опишите проблему</label>
+                <textarea id="requestDescription" placeholder="Например: В аудитории 305 не работает проектор, завтра 10:00 лекция...">В аудитории 305 не работает проектор, завтра в 10:00 должна проходит лекция.</textarea>
+              </div>
+              <div class="grid two" style="margin-bottom: 14px;">
+                <div class="field">
+                  <label>Приоритет</label>
+                  <select id="requestPriority">
+                    <option>Средний</option>
+                    <option>Высокий</option>
+                    <option>Критический</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Вложение</label>
+                  <input id="requestAttachment" type="file" />
+                </div>
+              </div>
+              <div class="row">
+                <button class="secondary" onclick="analyzeRequest()">AI анализ</button>
+                <button class="primary" onclick="submitTicket()">Отправить заявку</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Как RouteDesk понимает обращение</h3>
+              <div class="timeline">
+                <div class="timeline-step">
+                  <div class="num">1</div>
+                  <div>
+                    <strong>Обработка текста</strong>
+                    <p>Расшифровка контекста, извлечение сущностей и признаков.</p>
+                  </div>
+                </div>
+                <div class="timeline-step">
+                  <div class="num">2</div>
+                  <div>
+                    <strong>AI-классификация</strong>
+                    <p>Определение категории, отдела, приоритета и уверенности.</p>
+                  </div>
+                </div>
+                <div class="timeline-step">
+                  <div class="num">3</div>
+                  <div>
+                    <strong>Вертикальная маршрутизация</strong>
+                    <p>Проверка правил и передача заявки в нужное подразделение.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="requests">
+          <div class="card">
+            <div class="head-line">
+              <h3>Мои заявки</h3>
+              <button class="primary" onclick="showScreen('create')">＋ Создать</button>
+            </div>
+            <div class="tabs">
+              <button class="active" onclick="filterRequests('all', this)">Все</button>
+              <button onclick="filterRequests('open', this)">Открытые</button>
+              <button onclick="filterRequests('done', this)">Решённые</button>
+              <button onclick="filterRequests('rerouted', this)">Перенаправления</button>
+            </div>
+            <div class="list" id="requestsList">
+              <div class="list-item">
+                <div>
+                  <strong>#2487 · Не работает проектор в аудитории 305</strong>
+                  <p>IT · Высокий приоритет · Назначено: Техподдержка</p>
+                </div>
+                <div class="list-actions">
+                  <span class="tag green">В работе</span>
+                  <button class="ghost" onclick="showScreen('history')">История</button>
+                </div>
+              </div>
+              <div class="list-item">
+                <div>
+                  <strong>#2486 · Не хватает канцтоваров для приемной</strong>
+                  <p>АХО · Средний приоритет · Назначено: Администрация</p>
+                </div>
+                <div class="list-actions">
+                  <span class="tag orange">На проверке</span>
+                  <button class="ghost" onclick="showScreen('executor')">Открыть</button>
+                </div>
+              </div>
+              <div class="list-item">
+                <div>
+                  <strong>#2485 · Запрос на отпуск</strong>
+                  <p>Кадры · Средний приоритет · Решено 2 часа назад</p>
+                </div>
+                <div class="list-actions">
+                  <span class="tag green">Решено</span>
+                  <button class="ghost" onclick="showScreen('feedback')">Оценить</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="history">
+          <div class="grid two">
+            <div class="card">
+              <div class="head-line">
+                <h3>История заявки #2487</h3>
+                <span class="tag green">В работе</span>
+              </div>
+              <div class="timeline">
+                <div class="timeline-step">
+                  <div class="num">1</div>
+                  <div>
+                    <strong>Создана</strong>
+                    <p>09:10 · Сотрудник · “Не работает проектор...”</p>
+                  </div>
+                </div>
+                <div class="timeline-step">
+                  <div class="num">2</div>
+                  <div>
+                    <strong>AI-классификация</strong>
+                    <p>09:12 · RouteDesk · Категория: IT, уверенность: 94%</p>
+                  </div>
+                </div>
+                <div class="timeline-step">
+                  <div class="num">3</div>
+                  <div>
+                    <strong>Назначено</strong>
+                    <p>09:15 · Техническая поддержка · SLA: 4 часа</p>
+                  </div>
+                </div>
+                <div class="timeline-step">
+                  <div class="num">4</div>
+                  <div>
+                    <strong>Перенаправлено</strong>
+                    <p>09:42 · Исполнитель · Причина: “Не мой отдел”, переадресовано в АХО</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Сводка</h3>
+              <div class="stats-grid">
+                <div class="mini-stat">
+                  <small>Время до назначения</small>
+                  <strong>5 мин</strong>
+                </div>
+                <div class="mini-stat">
+                  <small>Перенаправлений</small>
+                  <strong>1</strong>
+                </div>
+                <div class="mini-stat">
+                  <small>Очередь</small>
+                  <strong>18</strong>
+                </div>
+                <div class="mini-stat">
+                  <small>SLA</small>
+                  <strong>96%</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="manager">
+          <div class="card">
+            <div class="head-line">
+              <h3>Управленческая панель</h3>
+              <button class="secondary" onclick="showScreen('reports')">Отчёты</button>
+            </div>
+            <div class="tabs">
+              <button class="active">Общий обзор</button>
+              <button onclick="showScreen('departments')">Подразделения</button>
+              <button onclick="showScreen('workload')">Загрузка</button>
+            </div>
+            <div class="grid four" style="margin-top: 8px;">
+              <div class="mini-stat"><small>Заявок сегодня</small><strong>86</strong></div>
+              <div class="mini-stat"><small>Среднее время</small><strong>2.4 ч</strong></div>
+              <div class="mini-stat"><small>Доля в срок</small><strong>96%</strong></div>
+              <div class="mini-stat"><small>Ошибки маршрутизации</small><strong>18%</strong></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="departments">
+          <div class="card">
+            <div class="head-line">
+              <h3>Сравнение подразделений</h3>
+              <select class="chip" aria-label="period">
+                <option>За 30 дней</option>
+                <option>За 90 дней</option>
+              </select>
+            </div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Подразделение</th>
+                  <th>Заявок</th>
+                  <th>Среднее время</th>
+                  <th>SLA</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>IT</td><td>82</td><td>1.8 ч</td><td>96%</td></tr>
+                <tr><td>АХО</td><td>69</td><td>2.6 ч</td><td>90%</td></tr>
+                <tr><td>Кадры</td><td>48</td><td>2.1 ч</td><td>93%</td></tr>
+                <tr><td>Бухгалтерия</td><td>37</td><td>2.9 ч</td><td>89%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="screen" id="workload">
+          <div class="grid three">
+            <div class="card kpi">
+              <div class="symbol">◷</div>
+              <div class="meta">
+                <strong>32</strong>
+                <span class="muted small">В очереди сейчас</span>
+              </div>
+            </div>
+            <div class="card kpi">
+              <div class="symbol" style="background: rgba(239,92,92,0.12); color: var(--red);">!</div>
+              <div class="meta">
+                <strong>11</strong>
+                <span class="muted small">Просроченных</span>
+              </div>
+            </div>
+            <div class="card kpi">
+              <div class="symbol" style="background: rgba(26,183,125,0.12); color: var(--green);">⇡</div>
+              <div class="meta">
+                <strong>+18%</strong>
+                <span class="muted small">Нагрузка</span>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="margin-top: 18px;">
+            <h3>Узкие места</h3>
+            <div class="list">
+              <div class="list-item">
+                <div><strong>IT · высокая нагрузка</strong><p>Доля обращений по оборудованию выросла на 22%.</p></div>
+                <span class="tag red">Критично</span>
+              </div>
+              <div class="list-item">
+                <div><strong>АХО · задержка на согласовании</strong><p>Среднее время решения увеличилось на 40 минут.</p></div>
+                <span class="tag orange">Нужно вмешательство</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="ai">
+          <div class="grid four">
+            <div class="card kpi"><div class="symbol">✧</div><div class="meta"><strong>92%</strong><span class="muted small">Accuracy</span></div></div>
+            <div class="card kpi"><div class="symbol" style="background: rgba(58,142,246,0.12); color: var(--blue);">F1</div><div class="meta"><strong>0.90</strong><span class="muted small">Macro-F1</span></div></div>
+            <div class="card kpi"><div class="symbol" style="background: rgba(26,183,125,0.12); color: var(--green);">✓</div><div class="meta"><strong>87%</strong><span class="muted small">Авто-маршрут</span></div></div>
+            <div class="card kpi"><div class="symbol" style="background: rgba(239,92,92,0.12); color: var(--red);">!</div><div class="meta"><strong>13%</strong><span class="muted small">Низкая уверенность</span></div></div>
+          </div>
+          <div class="card" style="margin-top: 18px;">
+            <h3>Ошибки AI</h3>
+            <table class="table">
+              <thead>
+                <tr><th>Заявка</th><th>Предсказано</th><th>Правильная категория</th><th>Причина</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>#102</td><td>IT</td><td>АХО</td><td>Ложный сигнал по слову “аудитория”</td></tr>
+                <tr><td>#118</td><td>Кадры</td><td>Бухгалтерия</td><td>Неточное распознавание контекста</td></tr>
+                <tr><td>#124</td><td>IT</td><td>IT</td><td>Корректно</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="screen" id="classification">
+          <div class="grid two">
+            <div class="card">
+              <div class="result-head">
+                <div class="check">✓</div>
+                <div>
+                  <h3 style="margin:0;">Результат AI-классификации</h3>
+                  <div class="muted small">Принято по запросу “Не работает проектор...”</div>
+                </div>
+              </div>
+              <div class="field">
+                <label>Категория</label>
+                <div class="tag blue" style="display:inline-flex; width: fit-content;">IT</div>
+              </div>
+              <div style="margin-top: 14px;">
+                <label class="small muted" style="display:block; margin-bottom: 6px; font-weight:700;">Уверенность модели</label>
+                <div class="confidence-bar"><span style="width: 94%;"></span></div>
+                <div class="row" style="margin-top: 8px;"><span class="small muted">94%</span><strong>Авто-маршрут</strong></div>
+              </div>
+              <div class="meta-block" style="margin-top: 18px;">
+                <div class="field">
+                  <label>Подразделение</label>
+                  <select id="classSelect">
+                    <option>Техническая поддержка</option>
+                    <option>Административный отдел</option>
+                    <option>Кадры</option>
+                    <option>Бухгалтерия</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Объяснение</label>
+                  <textarea readonly>Слова “не работает”, “аудитория”, “проектор”, “лекция” указывают на техническую неисправность оборудования в учебной аудитории и повышенный риск срыва учебного процесса.</textarea>
+                </div>
+              </div>
+              <div class="row" style="margin-top: 16px;">
+                <button class="secondary" onclick="confirmClassification()">Подтвердить</button>
+                <button class="primary" onclick="showScreen('inbox')">Назначить исполнителя</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Правила маршрутизации</h3>
+              <div class="list">
+                <div class="list-item"><div><strong>Правило 1</strong><p>Если в тексте присутствует аудитория и оборудование — IT.</p></div><span class="tag green">Активно</span></div>
+                <div class="list-item"><div><strong>Правило 2</strong><p>Если речь о лекции/экзамене — высокий приоритет.</p></div><span class="tag green">Активно</span></div>
+                <div class="list-item"><div><strong>Правило 3</strong><p>Если тип обращения неясен — запросить уточнение.</p></div><span class="tag orange">Проверка</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="inbox">
+          <div class="card">
+            <div class="head-line">
+              <h3>Входящие заявки</h3>
+              <span class="tag blue">Очередь отдела</span>
+            </div>
+            <div class="tabs">
+              <button class="active">Высокий приоритет</button>
+              <button>Средний</button>
+              <button>Низкий</button>
+            </div>
+            <div class="list">
+              <div class="list-item">
+                <div>
+                  <strong>#2487 · Не работает проектор</strong>
+                  <p>Аудитория 305 · Ключевые слова: проектор, лекция, аудитория</p>
+                </div>
+                <div class="list-actions">
+                  <span class="tag red">Высокий</span>
+                  <button class="primary" onclick="acceptTicket(2487)">Принять</button>
+                </div>
+              </div>
+              <div class="list-item">
+                <div>
+                  <strong>#2489 · Нет доступа к серверу</strong>
+                  <p>IT-окружение · Доступ к ERP сброшен</p>
+                </div>
+                <div class="list-actions">
+                  <span class="tag orange">Средний</span>
+                  <button class="secondary" onclick="acceptTicket(2489)">Принять</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="executor">
+          <div class="grid two">
+            <div class="card">
+              <div class="head-line">
+                <h3>Работа исполнителя</h3>
+                <span class="tag red">Высокий приоритет</span>
+              </div>
+              <div class="field">
+                <label>Заявка</label>
+                <input type="text" value="#2487 · Не работает проектор в аудитории 305" readonly />
+              </div>
+              <div class="field" style="margin-top: 12px;">
+                <label>Комментарий исполнителя</label>
+                <textarea id="executorComment" placeholder="Например: Проверил кабель, заменил HDMI, оборудование работает">Проверил соединение и заменил HDMI-кабель. Проектор запущен, аудитория готова к лекции.</textarea>
+              </div>
+              <div class="row" style="margin-top: 16px;">
+                <button class="secondary" onclick="showScreen('reroute')">Не мой отдел</button>
+                <button class="primary" onclick="saveExecutorComment()">Сохранить</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Контроль SLA</h3>
+              <div class="stats-grid">
+                <div class="mini-stat"><small>Осталось</small><strong>2 ч 05 м</strong></div>
+                <div class="mini-stat"><small>Статус</small><strong>В работе</strong></div>
+                <div class="mini-stat"><small>Подразделение</small><strong>IT</strong></div>
+                <div class="mini-stat"><small>Решение</small><strong>Ожидается</strong></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="reroute">
+          <div class="grid two">
+            <div class="card">
+              <h3>Перенаправление заявки #2487</h3>
+              <div class="field">
+                <label>Выберите подразделение</label>
+                <select id="rerouteDept">
+                  <option>АХО</option>
+                  <option>Кадры</option>
+                  <option>Бухгалтерия</option>
+                  <option>Учебный отдел</option>
+                </select>
+              </div>
+              <div class="field" style="margin-top: 12px;">
+                <label>Причина перенаправления</label>
+                <textarea id="rerouteReason" placeholder="Например: Это не техническая проблема, а административная...">Надо провести согласование с административным отделом по заявке на ремонт и подготовку аудитории.</textarea>
+              </div>
+              <div class="row" style="margin-top: 16px;">
+                <button class="secondary" onclick="showScreen('executor')">Назад</button>
+                <button class="primary" onclick="rerouteTicket()">Перенаправить</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Польза от перенаправления</h3>
+              <div class="list">
+                <div class="list-item"><div><strong>История движения заявки</strong><p>Сохраняется причина, временной интервал и старое/новое подразделение.</p></div><span class="tag green">Записано</span></div>
+                <div class="list-item"><div><strong>Метрика процесса</strong><p>Учитывается в анализе количества лишних пересылок.</p></div><span class="tag blue">AI анализ</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="complete">
+          <div class="grid two">
+            <div class="card">
+              <div class="check" style="margin-bottom: 12px;">✓</div>
+              <h3>Завершение заявки #2487</h3>
+              <div class="field">
+                <label>Результат выполненной работы</label>
+                <textarea id="resolutionText" placeholder="Опишите, что удалось исправить, какие меры приняты...">Проектор переведен в рабочий режим, жалоба закрыта, аудитория готова к лекции.</textarea>
+              </div>
+              <div class="field" style="margin-top: 12px;">
+                <label>Файл с подтверждением</label>
+                <input id="resolutionFile" type="file" />
+              </div>
+              <div class="row" style="margin-top: 16px;">
+                <button class="secondary" onclick="showScreen('executor')">Назад</button>
+                <button class="primary" onclick="completeTicket()">Закрыть заявку</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Показатели после закрытия</h3>
+              <div class="stats-grid">
+                <div class="mini-stat"><small>Время решения</small><strong>1 ч 42 м</strong></div>
+                <div class="mini-stat"><small>Отклик</small><strong>Своевременно</strong></div>
+                <div class="mini-stat"><small>Пользователь</small><strong>Довольный</strong></div>
+                <div class="mini-stat"><small>SLA</small><strong>Пройдено</strong></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="feedback">
+          <div class="grid two">
+            <div class="card">
+              <h3>Оцените решение заявки #2487</h3>
+              <p class="muted">Проблема с проектором в аудитории 305 была устранена. Оцените качество решения и скорость реакции.</p>
+              <div class="tabs" id="ratingTabs" style="margin-top: 14px;">
+                <button class="active">1</button>
+                <button>2</button>
+                <button>3</button>
+                <button>4</button>
+                <button>5</button>
+              </div>
+              <div class="row" style="margin-top: 12px;">
+                <button class="secondary" onclick="showScreen('dashboard')">Потом</button>
+                <button class="primary" onclick="sendFeedback()">Отправить оценку</button>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Почему оценка важна</h3>
+              <div class="list">
+                <div class="list-item"><div><strong>Дообучение качества</strong><p>Оценка помогает отслеживать реальную удовлетворённость и качество обработки.</p></div><span class="tag blue">Локальный сигнал</span></div>
+                <div class="list-item"><div><strong>Метрики процесса</strong><p>Показывает, где система быстро решает проблемы, а где возникают задержки.</p></div><span class="tag green">Наблюдаемость</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="notifications">
+          <div class="card">
+            <div class="head-line">
+              <h3>Уведомления</h3>
+              <button class="secondary" onclick="markAllRead()">Отметить всё как прочитанное</button>
+            </div>
+            <div class="list" id="notificationList">
+              <div class="list-item">
+                <div><strong>Новая заявка назначена</strong><p>#2489 принята исполнителем IT.</p></div>
+                <span class="tag blue">Новое</span>
+              </div>
+              <div class="list-item">
+                <div><strong>Перенаправление подтверждено</strong><p>#2487 переведена в АХО по причине административного согласования.</p></div>
+                <span class="tag orange">Важно</span>
+              </div>
+              <div class="list-item">
+                <div><strong>SLA предупреждение</strong><p>Время решения по 3 заявкам истекает в ближайшие 30 минут.</p></div>
+                <span class="tag red">Внимание</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="reports">
+          <div class="card">
+            <div class="head-line">
+              <h3>Отчёты и выгрузки</h3>
+              <button class="primary" onclick="exportCSV()">Экспорт CSV</button>
+            </div>
+            <table class="table">
+              <thead>
+                <tr><th>Метрика</th><th>Текущее</th><th>Цель</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Правильная маршрутизация</td><td>82%</td><td>≥85%</td></tr>
+                <tr><td>Среднее число перенаправлений</td><td>0.9</td><td>≤0.9</td></tr>
+                <tr><td>Время назначения</td><td>5 мин</td><td>-30%</td></tr>
+                <tr><td>Доля решений в срок</td><td>96%</td><td>≥95%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
     </div>
-    <div class="grid two">
-      <div class="card"><div class="row"><h3>Динамика заявок</h3><span class="pill">Последние 7 дней</span></div><svg class="chart" viewBox="0 0 600 210" preserveAspectRatio="none"><defs><linearGradient id="area" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#654be6" stop-opacity=".2"/><stop offset="1" stop-color="#654be6" stop-opacity="0"/></linearGradient></defs><g stroke="#ecebfa" stroke-width="1"><path d="M40 25H580M40 80H580M40 135H580M40 190H580"/></g><path d="M40 160 C90 145 100 110 160 120 S240 70 300 92 S390 50 440 68 S520 25 580 35 L580 190 L40 190Z" fill="url(#area)"/><path d="M40 160 C90 145 100 110 160 120 S240 70 300 92 S390 50 440 68 S520 25 580 35" fill="none" stroke="#654be6" stroke-width="4" stroke-linecap="round"/><path d="M40 180 C100 170 120 150 160 158 S250 120 300 142 S390 110 440 125 S520 90 580 100" fill="none" stroke="#4389f5" stroke-width="3" stroke-linecap="round"/><g fill="#7b80a6" font-size="12"><text x="8" y="194">0</text><text x="3" y="139">50</text><text x="0" y="84">100</text><text x="35" y="207">Пн</text><text x="125" y="207">Вт</text><text x="215" y="207">Ср</text><text x="305" y="207">Чт</text><text x="395" y="207">Пт</text><text x="485" y="207">Сб</text><text x="560" y="207">Вс</text></g></svg><div class="row small muted"><span>● Создано</span><span style="color:var(--blue)">● Решено</span></div></div>
-      <div class="card"><h3>Распределение по категориям</h3><div class="donut-wrap"><div class="donut"></div><div class="legend"><span><i class="dot" style="background:#5638dc"></i>IT <b>32%</b></span><span><i class="dot" style="background:#4389f5"></i>АХО <b>28%</b></span><span><i class="dot" style="background:#f7b24b"></i>Кадры <b>20%</b></span><span><i class="dot" style="background:#e88cae"></i>Бухгалтерия <b>12%</b></span><span><i class="dot" style="background:#8ac9d0"></i>Учебный отдел <b>8%</b></span></div></div></div>
-    </div>
-    <div class="card" style="margin-top:16px"><div class="row"><h3>Последние заявки</h3><button class="ghost" onclick="showScreen('requests')">Все заявки →</button></div><div id="recentList"><div class="ticket"><div class="ticket-icon">▣</div><div style="flex:1"><b>Не работает проектор в аудитории 305</b><p>№2487 · IT · Сегодня, 14:32</p></div><span class="pill">В работе</span></div><div class="ticket"><div class="ticket-icon">⌁</div><div style="flex:1"><b>Протекает батарея в кабинете 214</b><p>№2486 · АХО · Сегодня, 13:50</p></div><span class="pill orange">Назначена</span></div></div></div>
-  </section>
 
-  <section class="screen" id="create">
-    <div class="grid two"><div class="card"><h3 class="section-title">Создание заявки</h3><div class="field"><label>Опишите вашу проблему</label><textarea id="description" placeholder="Например: в кабинете 305 не работает проектор..."></textarea><span class="field-hint">Опишите проблему подробно — это поможет точнее определить подразделение.</span></div><div class="inline-fields"><div class="field"><label>Категория</label><select id="category"><option value="Автоматически">Определить автоматически</option><option>IT</option><option>АХО</option><option>Кадры</option><option>Бухгалтерия</option><option>Учебный отдел</option></select></div><div class="field"><label>Приоритет</label><select id="priority"><option>Средний</option><option>Низкий</option><option>Высокий</option></select></div></div><div class="field"><label>Прикрепить файл (необязательно)</label><label class="upload">＋ Выбрать файл<input type="file" id="attachment" /></label><span class="field-hint" id="fileName">Файл не выбран</span></div><button class="primary" style="width:100%" onclick="analyzeRequest()">✧ Проанализировать с помощью AI</button></div>
-    <div class="card"><h3>Как работает RouteDesk</h3><div class="timeline"><div class="step done"><strong>1. Описание проблемы</strong><p>Вы рассказываете, что произошло.</p></div><div class="step"><strong>2. AI-классификация</strong><p>Модель определяет категорию и рекомендуемый отдел.</p></div><div class="step"><strong>3. Подтверждение</strong><p>Вы проверяете рекомендацию перед отправкой.</p></div><div class="step"><strong>4. Маршрутизация</strong><p>Заявка поступает ответственному подразделению.</p></div></div><div id="analysisResult" class="result" style="display:none;margin-top:12px"><div class="result-head"><div class="check">✓</div><div><b>Результат AI-классификации</b><div class="small muted">Предварительная рекомендация</div></div></div><div class="result-grid"><div><small>Категория</small><b id="predCategory">IT</b></div><div><small>Подразделение</small><b id="predDept">Техническая поддержка</b></div><div><small>Уверенность</small><b id="predConfidence">92%</b></div><div><small>Приоритет</small><b id="predPriority">Средний</b></div></div><p class="small muted" id="reasonText">Ключевые слова: оборудование, аудитория, проектор.</p><div class="field" style="margin:14px 0 0"><label>Подтвердите категорию</label><select id="confirmCategory"><option>IT</option><option>АХО</option><option>Кадры</option><option>Бухгалтерия</option><option>Учебный отдел</option></select></div><button class="primary" style="width:100%;margin-top:8px" onclick="submitTicket()">Подтвердить и отправить заявку</button></div></div></div>
-  </section>
+    <nav class="mobile-nav">
+      <div class="inner">
+        <button class="active" data-screen="dashboard">⌂<br>Главная</button>
+        <button data-screen="create">＋<br>Создать</button>
+        <button data-screen="requests">▤<br>Заявки</button>
+        <button data-screen="manager">▥<br>Панель</button>
+      </div>
+    </nav>
 
-  <section class="screen" id="requests"><div class="card"><div class="row"><h3>Мои заявки</h3><button class="primary" onclick="showScreen('create')">＋ Создать</button></div><div class="tabs"><button class="active" onclick="filterRequests('Все',this)">Все</button><button onclick="filterRequests('В работе',this)">В работе</button><button onclick="filterRequests('Решена',this)">Решённые</button><button onclick="filterRequests('Назначена',this)">Назначенные</button></div><div class="table-wrap"><table class="table"><thead><tr><th>№</th><th>Описание</th><th>Категория</th><th>Статус</th><th>Приоритет</th><th>Дата</th></tr></thead><tbody id="requestsTable"><tr onclick="showScreen('history')"><td>#2487</td><td>Не работает проектор в аудитории 305</td><td>IT</td><td><span class="pill">В работе</span></td><td><span class="pill red">Высокий</span></td><td>29.10.2026</td></tr><tr><td>#2486</td><td>Протекает батарея в кабинете 214</td><td>АХО</td><td><span class="pill orange">Назначена</span></td><td>Средний</td><td>29.10.2026</td></tr><tr><td>#2485</td><td>Оформление отпуска</td><td>Кадры</td><td><span class="pill green">Решена</span></td><td>Низкий</td><td>27.10.2026</td></tr></tbody></table></div></div></section>
+    <div class="toast" id="toast"></div>
 
-  <section class="screen" id="history"><div class="grid two"><div class="card"><div class="row"><h3>Заявка №2487</h3><span class="pill">В работе</span></div><h2 style="font-size:20px">Не работает проектор в аудитории 305</h2><p class="muted small">Создана 29.10.2026 в 14:32 · Приоритет: высокий</p><div class="result" style="margin:18px 0"><div class="row"><b>Маршрут заявки</b><span class="pill">1 перенаправление</span></div><p class="small muted">Текущий отдел: Отдел технической поддержки</p></div><h3>История обработки</h3><div class="timeline"><div class="step done"><strong>Заявка создана</strong><p>Иван Иванов · 29.10.2026, 14:32</p></div><div class="step done"><strong>Классифицирована AI</strong><p>Категория IT · уверенность 92% · 14:33</p></div><div class="step done"><strong>Назначена в АХО</strong><p>Первоначальная маршрутизация · 14:35</p></div><div class="step done"><strong>Перенаправлена в IT</strong><p>Причина: оборудование относится к технической поддержке · 14:48</p></div><div class="step"><strong>Принята в работу</strong><p>Исполнитель: Петров С.А. · 15:02</p></div><div class="step"><strong>Решена</strong><p>Ожидает завершения</p></div></div></div><div class="card"><h3>Сводка обработки</h3><div class="grid three"><div><span class="muted small">Перенаправлений</span><h2>1</h2></div><div><span class="muted small">Отделов</span><h2>2</h2></div><div><span class="muted small">Время в пути</span><h2>16 мин</h2></div></div><h3 style="margin-top:25px">Участники</h3><div class="ticket"><div class="avatar">ИИ</div><div><b>Иван Иванов</b><p>Автор заявки</p></div></div><div class="ticket"><div class="avatar" style="background:#55a5ed">АХ</div><div><b>Административно-хозяйственный отдел</b><p>Первоначальное назначение</p></div></div><div class="ticket"><div class="avatar" style="background:#18b981">IT</div><div><b>Петров С.А.</b><p>Текущий исполнитель</p></div></div></div></div></section>
+    <script>
+      const state = {
+        newTicketId: 2490,
+        routedTickets: 23,
+        currentRating: 1,
+        tickets: [
+          { id: 2487, title: 'Не работает проектор', category: 'IT', dept: 'Техническая поддержка', status: 'В работе', priority: 'Высокий' },
+          { id: 2486, title: 'Нет канцтоваров', category: 'АХО', dept: 'Администрация', status: 'На проверке', priority: 'Средний' },
+          { id: 2485, title: 'Запрос на отпуск', category: 'Кадры', dept: 'HR', status: 'Решено', priority: 'Средний' }
+        ]
+      };
 
-  <section class="screen" id="manager"><div class="tabs"><button class="active">Общий обзор</button><button onclick="showScreen('departments')">Подразделения</button><button onclick="showScreen('workload')">Нагрузка</button><button onclick="showScreen('ai')">AI</button></div><div class="grid kpis"><div class="card kpi"><div class="symbol">▤</div><strong>248</strong><span class="muted small">Всего заявок</span></div><div class="card kpi"><div class="symbol">◷</div><strong>2.4 ч</strong><span class="muted small">Среднее время решения</span></div><div class="card kpi"><div class="symbol">✓</div><strong>92%</strong><span class="muted small">Верно направлены с первого раза</span></div><div class="card kpi"><div class="symbol">⇄</div><strong>8%</strong><span class="muted small">Перенаправлены</span></div></div><div class="grid two"><div class="card"><h3>Динамика заявок</h3><svg class="chart" viewBox="0 0 600 210" preserveAspectRatio="none"><g stroke="#ecebfa"><path d="M30 25H580M30 80H580M30 135H580M30 190H580"/></g><polyline points="30,155 110,125 190,135 270,85 350,100 430,65 510,72 580,28" fill="none" stroke="#654be6" stroke-width="4" stroke-linecap="round"/><polyline points="30,175 110,160 190,165 270,135 350,145 430,120 510,130 580,95" fill="none" stroke="#4389f5" stroke-width="3"/></svg><div class="small muted">Создано · Решено</div></div><div class="card"><h3>Соблюдение SLA</h3><div style="font-size:42px;font-weight:800;margin:12px 0;color:var(--green)">92%</div><div class="barline" style="height:12px"><i style="width:92%"></i></div><p class="small muted">228 из 248 заявок обработаны в рамках SLA</p><hr style="border:0;border-top:1px solid var(--line);margin:20px 0"><div class="row"><span class="muted small">Просрочено</span><b class="negative">20 заявок</b></div></div></div></section>
+      const titles = {
+        dashboard: ['Главная', 'Интеллектуальная маршрутизация внутренних процессов'],
+        create: ['Создание заявки', 'Опишите проблему — RouteDesk определит канал и приоритет'],
+        requests: ['Мои заявки', 'Единая история обращений сотрудника'],
+        history: ['История обработки', 'Полный жизненный цикл заявки'],
+        manager: ['Управленческая панель', 'Ключевые метрики и нагрузка подразделений'],
+        departments: ['Подразделения', 'Сравнение производительности и SLA'],
+        workload: ['Нагрузка и узкие места', 'Где возникают задержки и перегрузки'],
+        ai: ['Качество AI', 'Метрики модели и анализ ошибок'],
+        classification: ['Результат AI', 'Маршрутизация по контексту обращения'],
+        inbox: ['Входящие исполнителя', 'Заявки, готовые к обработке'],
+        executor: ['Работа исполнителя', 'Проверка, комментарий и закрытие'],
+        reroute: ['Перенаправление', 'История и причина переноса заявки'],
+        complete: ['Завершение заявки', 'Подтверждение решения и закрытие'],
+        feedback: ['Оценка решения', 'Как пользователь оценивает качество'],
+        notifications: ['Уведомления', 'События по заявкам и SLA'],
+        reports: ['Отчёты', 'Экспорт и управление показателями']
+      };
 
-  <section class="screen" id="departments"><div class="card"><div class="row"><h3>Аналитика подразделений</h3><select class="chip"><option>За 30 дней</option><option>За 7 дней</option><option>За 90 дней</option></select></div><div class="table-wrap"><table class="table"><thead><tr><th>Подразделение</th><th>Заявок</th><th>Среднее время</th><th>Просрочено</th><th>SLA</th></tr></thead><tbody><tr><td><b>IT</b></td><td>82</td><td>1.8 ч</td><td>4%</td><td><span class="positive">96%</span></td></tr><tr><td><b>АХО</b></td><td>69</td><td>2.6 ч</td><td>10%</td><td>90%</td></tr><tr><td><b>Кадры</b></td><td>48</td><td>2.1 ч</td><td>7%</td><td>93%</td></tr><tr><td><b>Бухгалтерия</b></td><td>29</td><td>2.9 ч</td><td>12%</td><td>88%</td></tr><tr><td><b>Учебный отдел</b></td><td>20</td><td>2.2 ч</td><td>9%</td><td>91%</td></tr></tbody></table></div></div><div class="grid two" style="margin-top:16px"><div class="card"><h3>Количество заявок</h3><div class="metric-line"><b>IT</b><div class="barline"><i style="width:100%"></i></div><em>82</em></div><div class="metric-line"><b>АХО</b><div class="barline"><i style="width:84%"></i></div><em>69</em></div><div class="metric-line"><b>Кадры</b><div class="barline"><i style="width:58%"></i></div><em>48</em></div><div class="metric-line"><b>Бухгалтерия</b><div class="barline"><i style="width:35%"></i></div><em>29</em></div></div><div class="card"><h3>Где чаще нарушается SLA</h3><div class="metric-line"><b>Бухгалтерия</b><div class="barline"><i style="width:12%;background:var(--orange)"></i></div><em>12%</em></div><div class="metric-line"><b>АХО</b><div class="barline"><i style="width:10%;background:var(--orange)"></i></div><em>10%</em></div><div class="metric-line"><b>Учебный отдел</b><div class="barline"><i style="width:9%;background:var(--orange)"></i></div><em>9%</em></div></div></div></section>
+      function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+        document.querySelectorAll('[data-screen]').forEach(btn => {
+          const active = btn.dataset.screen === id;
+          btn.classList.toggle('active', active);
+        });
 
-  <section class="screen" id="workload"><div class="grid three"><div class="card kpi"><div class="symbol">◷</div><strong>32</strong><span class="muted small">В очереди сейчас</span></div><div class="card kpi"><div class="symbol">⚑</div><strong>7</strong><span class="muted small">Просрочено</span></div><div class="card kpi"><div class="symbol">⌁</div><strong>2.4 ч</strong><span class="muted small">Среднее ожидание</span></div></div><div class="grid two" style="margin-top:16px"><div class="card"><h3>Узкие места процесса</h3><div class="metric-line"><b>Назначение</b><div class="barline"><i style="width:42%"></i></div><em>42%</em></div><div class="metric-line"><b>Исполнение</b><div class="barline"><i style="width:28%"></i></div><em>28%</em></div><div class="metric-line"><b>Классификация</b><div class="barline"><i style="width:18%"></i></div><em>18%</em></div><div class="metric-line"><b>Закрытие</b><div class="barline"><i style="width:12%"></i></div><em>12%</em></div><p class="small muted">Доля общего времени процесса, приходящаяся на этап.</p></div><div class="card"><h3>Подразделения с наибольшей нагрузкой</h3><div class="ticket"><div class="ticket-icon">▣</div><div style="flex:1"><b>IT</b><p>42 активные заявки</p></div><span class="pill red">Высокая</span></div><div class="ticket"><div class="ticket-icon">⌁</div><div style="flex:1"><b>АХО</b><p>37 активных заявок</p></div><span class="pill orange">Средняя</span></div><div class="ticket"><div class="ticket-icon">▦</div><div style="flex:1"><b>Учебный отдел</b><p>29 активных заявок</p></div><span class="pill orange">Средняя</span></div></div></div></section>
+        const [title, subtitle] = titles[id] || ['Главная', ''];
+        document.getElementById('pageTitle').textContent = title;
+        document.getElementById('pageSubtitle').textContent = subtitle;
+      }
 
-  <section class="screen" id="ai"><div class="grid kpis"><div class="card kpi"><div class="symbol">✧</div><strong>92%</strong><span class="muted small">Accuracy</span></div><div class="card kpi"><div class="symbol">◎</div><strong>90%</strong><span class="muted small">Precision</span></div><div class="card kpi"><div class="symbol">✓</div><strong>91%</strong><span class="muted small">Recall</span></div><div class="card kpi"><div class="symbol">F</div><strong>91%</strong><span class="muted small">F1-score</span></div></div><div class="grid two"><div class="card"><h3>Сравнение моделей</h3><div class="metric-line"><b>Правила</b><div class="barline"><i style="width:72%"></i></div><em>72%</em></div><div class="metric-line"><b>ruBERT</b><div class="barline"><i style="width:82%"></i></div><em>82%</em></div><div class="metric-line"><b>LLM</b><div class="barline"><i style="width:87%"></i></div><em>87%</em></div><p class="small muted">Демо-значения. В рабочей системе метрики рассчитываются на размеченной тестовой выборке.</p></div><div class="card"><h3>Уверенность классификации</h3><div class="metric-line"><b>Высокая</b><div class="barline"><i style="width:68%"></i></div><em>68%</em></div><div class="metric-line"><b>Средняя</b><div class="barline"><i style="width:26%"></i></div><em>26%</em></div><div class="metric-line"><b>Низкая</b><div class="barline"><i style="width:6%;background:var(--orange)"></i></div><em>6%</em></div><div class="result" style="margin-top:18px"><b>Правило обработки</b><p class="small muted">При низкой уверенности система запрашивает уточнение или предлагает выбрать категорию вручную.</p></div></div></div><div class="card" style="margin-top:16px"><h3>Матрица ошибок — демонстрационный вид</h3><div class="table-wrap"><table class="table"><thead><tr><th></th><th>Предсказано IT</th><th>Предсказано АХО</th><th>Предсказано Кадры</th><th>Предсказано Бухгалтерия</th></tr></thead><tbody><tr><td>Факт IT</td><td class="positive">42</td><td>3</td><td>1</td><td>0</td></tr><tr><td>Факт АХО</td><td>4</td><td class="positive">36</td><td>1</td><td>2</td></tr><tr><td>Факт Кадры</td><td>0</td><td>1</td><td class="positive">28</td><td>2</td></tr><tr><td>Факт Бухгалтерия</td><td>1</td><td>2</td><td>1</td><td class="positive">24</td></tr></tbody></table></div></div></section>
+      document.querySelectorAll('[data-screen]').forEach(button => {
+        button.addEventListener('click', () => showScreen(button.dataset.screen));
+      });
 
-  <section class="screen" id="classification"><div class="grid two"><div class="card"><div class="result-head"><div class="check">✓</div><div><h3 style="margin:0">Результат AI-классификации</h3><span class="muted small">Заявка №2488 · предварительная рекомендация</span></div></div><div class="result-grid"><div><small>Категория</small><b id="classCategory">IT</b></div><div><small>Подразделение</small><b id="classDepartment">Отдел технической поддержки</b></div><div><small>Уверенность</small><b id="classConfidence">92%</b></div><div><small>Приоритет</small><b>Высокий</b></div></div><div class="result" style="margin-top:15px"><b>Почему система выбрала эту категорию?</b><p class="small muted">В описании обнаружены ключевые признаки: «проектор», «оборудование», «аудитория». Они чаще встречаются в заявках категории IT.</p></div><div class="field" style="margin-top:16px"><label>Подтвердить или изменить категорию</label><select id="classSelect"><option>IT</option><option>АХО</option><option>Кадры</option><option>Бухгалтерия</option><option>Учебный отдел</option></select></div><div class="row"><button class="ghost" onclick="toast('Категория оставлена без изменений')">Оставить рекомендацию</button><button class="primary" onclick="confirmClassification()">Подтвердить</button></div></div><div class="card"><h3>Если уверенность низкая</h3><p class="muted small">При результате ниже установленного порога RouteDesk не должен автоматически отправлять заявку. Система предлагает уточнить детали или выбрать категорию вручную.</p><div class="result"><span class="pill orange">Уверенность 58%</span><h3 style="margin-top:12px">Нужно уточнение</h3><p class="small muted">Что именно не работает?</p><div class="field"><select><option>Компьютер или оборудование</option><option>Помещение или коммуникации</option><option>Учебная система</option><option>Другое</option></select></div><button class="primary" style="width:100%" onclick="toast('Ответ сохранён. Повторный анализ запущен (демо)')">Уточнить и повторить анализ</button></div></div></div></section>
+      function toast(message) {
+        const el = document.getElementById('toast');
+        el.textContent = message;
+        el.classList.add('show');
+        clearTimeout(window.toastTimer);
+        window.toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
+      }
 
-  <section class="screen" id="inbox"><div class="row" style="margin-bottom:14px"><div><h3 class="section-title">Входящие заявки</h3><p class="muted small">Очередь отдела технической поддержки</p></div><span class="pill">12 новых</span></div><div class="tabs"><button class="active" onclick="toggleInbox('all',this)">Все</button><button onclick="toggleInbox('Высокий',this)">Высокий приоритет</button><button onclick="toggleInbox('Средний',this)">Средний</button><button onclick="toggleInbox('Низкий',this)">Низкий</button></div><div class="grid two"><div class="card inbox-item" data-priority="Высокий"><div class="row"><b>№2487</b><span class="pill red">Высокий</span></div><h3 style="margin-top:12px">Не работает проектор в аудитории 305</h3><p class="muted small">IT · Сегодня, 14:32 · Уверенность AI 92%</p><div class="row"><button class="primary" onclick="acceptTicket(2487)">Принять в работу</button><button class="ghost" onclick="showScreen('reroute')">Не мой отдел</button></div></div><div class="card inbox-item" data-priority="Средний"><div class="row"><b>№2486</b><span class="pill orange">Средний</span></div><h3 style="margin-top:12px">Не работает принтер на 2 этаже</h3><p class="muted small">IT · Сегодня, 14:20 · Уверенность AI 88%</p><div class="row"><button class="primary" onclick="acceptTicket(2486)">Принять в работу</button><button class="ghost" onclick="showScreen('reroute')">Не мой отдел</button></div></div><div class="card inbox-item" data-priority="Низкий"><div class="row"><b>№2485</b><span class="pill green">Низкий</span></div><h3 style="margin-top:12px">Настроить доступ к общей папке</h3><p class="muted small">IT · Сегодня, 13:55 · Уверенность AI 81%</p><div class="row"><button class="primary" onclick="acceptTicket(2485)">Принять в работу</button><button class="ghost" onclick="showScreen('reroute')">Не мой отдел</button></div></div><div class="card"><h3>Моя загрузка</h3><div class="kpi"><strong>8</strong><span class="muted small">Заявок в работе</span></div><div class="metric-line"><b>Загрузка</b><div class="barline"><i style="width:68%"></i></div><em>68%</em></div><p class="muted small">Показатели приведены для демонстрации.</p></div></div></section>
+      function classifyRequest(description) {
+        const d = description.toLowerCase();
+        if (/(проектор|монитор|компьютер|аудитория|лекция|дисплей)/i.test(d)) return { category: 'IT', department: 'Техническая поддержка', priority: 'Высокий', confidence: 94, reason: 'Слова “проектор”, “аудитория”, “лекция” указывают на техническую проблему в учебном пространстве.' };
+        if (/(канцтовары|мебель|уборка|служебная комната|освещение|ремонт)/i.test(d)) return { category: 'АХО', department: 'Администрация', priority: 'Средний', confidence: 88, reason: 'Обращение относится к административно-хозяйственным вопросам и организации пространства.' };
+        if (/(отпуск|декрет|кадры|прием|сотрудник|увольнение)/i.test(d)) return { category: 'Кадры', department: 'HR', priority: 'Средний', confidence: 90, reason: 'В тексте присутствуют признаки HR-операции и кадровых вопросов.' };
+        if (/(счет|оплата|налог|акт|договор|бухгалтер|финансы)/i.test(d)) return { category: 'Бухгалтерия', department: 'Бухгалтерия', priority: 'Средний', confidence: 86, reason: 'Явные признаки финансово-бухгалтерской операции.' };
+        return { category: 'IT', department: 'Техническая поддержка', priority: 'Средний', confidence: 72, reason: 'Обращение требует уточнения, но по контексту вероятнее всего техническая проблема.' };
+      }
 
-  <section class="screen" id="executor"><div class="grid two"><div class="card"><div class="row"><span class="pill">№2487 · В работе</span><span class="pill red">Высокий приоритет</span></div><h2 style="font-size:21px">Не работает проектор в аудитории 305</h2><p class="muted small">Создана Иваном Ивановым · 29.10.2026, 14:32</p><div class="result"><b>Рекомендация AI</b><p class="small">IT · Отдел технической поддержки · 92%</p></div><h3 style="margin-top:18px">Действия исполнителя</h3><div class="field"><label>Статус</label><select id="executorStatus"><option>В работе</option><option>Ожидает информации</option><option>Ожидает комплектующие</option></select></div><div class="field"><label>Комментарий для автора</label><textarea id="executorComment" placeholder="Напишите, что уже проверено или что требуется от сотрудника"></textarea></div><div class="row"><button class="ghost" onclick="saveExecutorComment()">Сохранить комментарий</button><button class="primary" onclick="showScreen('complete')">Завершить заявку</button></div></div><div class="card"><h3>Информация о заявке</h3><div class="ticket"><div class="ticket-icon">И</div><div><b>Иван Иванов</b><p>Автор · сотрудник</p></div></div><div class="ticket"><div class="ticket-icon">IT</div><div><b>Отдел технической поддержки</b><p>Текущее подразделение</p></div></div><div class="ticket"><div class="ticket-icon">◷</div><div><b>Время в работе</b><p>42 минуты</p></div></div><button class="ghost" style="width:100%" onclick="showScreen('history')">Посмотреть историю маршрута</button></div></div></section>
+      function analyzeRequest() {
+        const text = document.getElementById('requestDescription').value.trim();
+        if (!text) {
+          toast('Сначала опишите проблему');
+          return;
+        }
+        const result = classifyRequest(text);
+        document.getElementById('classSelect').value = result.department;
+        showScreen('classification');
+        toast(`AI определил: ${result.category} · ${result.department}`);
+        const head = document.querySelector('#classification .muted.small');
+        if (head) head.textContent = `Принято по запросу “${text.slice(0, 42)}...”`;
+        const bar = document.querySelector('#classification .confidence-bar span');
+        const label = document.querySelector('#classification .row strong');
+        if (bar) bar.style.width = `${result.confidence}%`;
+        if (label) label.textContent = result.priority === 'Высокий' ? 'Высокий приоритет' : 'Авто-маршрут';
+        const categoryTag = document.querySelector('#classification .tag.blue');
+        if (categoryTag) categoryTag.textContent = result.category;
+        const txt = document.querySelector('#classification textarea[readonly]');
+        if (txt) txt.value = result.reason;
+      }
 
-  <section class="screen" id="reroute"><div class="grid two"><div class="card"><h3>Перенаправление заявки №2487</h3><p class="muted small">Если заявка поступила не в то подразделение, укажите правильный отдел и причину. Перенаправление будет записано в историю.</p><div class="field"><label>Новое подразделение</label><select id="rerouteDept"><option>Отдел технической поддержки (IT)</option><option>Административно-хозяйственный отдел (АХО)</option><option>Отдел кадров</option><option>Бухгалтерия</option><option>Учебный отдел</option></select></div><div class="field"><label>Причина перенаправления</label><select id="rerouteReason"><option>Заявка относится к компетенции другого отдела</option><option>Неверно определена категория</option><option>Необходим профильный специалист</option><option>Другое</option></select></div><div class="field"><label>Комментарий</label><textarea placeholder="Уточните, почему заявка передаётся другому отделу"></textarea></div><button class="primary" style="width:100%" onclick="rerouteTicket()">Подтвердить перенаправление</button></div><div class="card"><h3>Текущий маршрут</h3><div class="timeline"><div class="step done"><strong>Создана</strong><p>Иван Иванов · 14:32</p></div><div class="step done"><strong>Назначена в АХО</strong><p>Первоначальная маршрутизация · 14:35</p></div><div class="step"><strong>Передача в выбранный отдел</strong><p>Ожидает подтверждения</p></div></div><div class="result"><b>Важно</b><p class="small muted">Исходное подразделение, новое подразделение, автор перенаправления, время и причина должны сохраняться в журнале истории.</p></div></div></div></section>
+      function submitTicket() {
+        const text = document.getElementById('requestDescription').value.trim();
+        if (!text) {
+          toast('Добавьте описание заявки');
+          return;
+        }
+        const result = classifyRequest(text);
+        const ticket = {
+          id: state.newTicketId++,
+          title: text.slice(0, 56),
+          category: result.category,
+          dept: result.department,
+          status: 'Новое',
+          priority: result.priority
+        };
+        state.tickets.unshift(ticket);
+        toast(`Заявка #${ticket.id} создана и отправлена в ${ticket.dept}`);
+        showScreen('dashboard');
+        document.getElementById('requestDescription').value = '';
+      }
 
-  <section class="screen" id="complete"><div class="grid two"><div class="card"><div class="check" style="margin-bottom:12px">✓</div><h3>Завершение заявки №2487</h3><p class="muted small">Перед закрытием опишите выполненные действия — автор увидит результат.</p><div class="field"><label>Что было сделано?</label><textarea id="resolutionText" placeholder="Например: проверили подключение, заменили кабель HDMI, проектор работает"></textarea></div><div class="field"><label>Результат</label><select id="resolutionStatus"><option>Проблема решена</option><option>Решено частично</option><option>Требуется дополнительная работа</option></select></div><div class="field"><label>Подтверждающий файл (необязательно)</label><label class="upload">＋ Прикрепить фото или документ<input type="file" id="resolutionFile"></label><span class="small muted" id="resolutionFileName">Файл не выбран</span></div><button class="primary" style="width:100%" onclick="completeTicket()">Закрыть заявку</button></div><div class="card"><h3>Перед закрытием</h3><div class="timeline"><div class="step done"><strong>Заявка принята</strong><p>Исполнитель назначен</p></div><div class="step done"><strong>Выполняются работы</strong><p>Статус: В работе</p></div><div class="step"><strong>Результат зафиксирован</strong><p>Комментарий и вложения</p></div><div class="step"><strong>Автор уведомлён</strong><p>После закрытия появится уведомление</p></div></div></div></div></section>
+      function filterRequests(filter, btn) {
+        const items = document.querySelectorAll('#requestsList .list-item');
+        items.forEach(item => {
+          const text = item.textContent.toLowerCase();
+          const show = filter === 'all' || (filter === 'open' && text.includes('в работе')) || (filter === 'done' && text.includes('решено')) || (filter === 'rerouted' && text.includes('перенаправ'));
+          item.style.display = show ? 'flex' : 'none';
+        });
+        document.querySelectorAll('#requests .tabs button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
 
-  <section class="screen" id="feedback"><div class="grid two"><div class="card"><h3>Оцените решение заявки №2487</h3><p>Проблема с проектором в аудитории 305</p><div class="field"><label>Насколько вы удовлетворены результатом?</label><div class="tabs" id="ratingTabs"><button class="active" onclick="setRating(1,this)">1</button><button onclick="setRating(2,this)">2</button><button onclick="setRating(3,this)">3</button><button onclick="setRating(4,this)">4</button><button onclick="setRating(5,this)">5</button></div><div class="small muted">1 — совсем не удовлетворён · 5 — полностью удовлетворён</div></div><div class="field"><label>Комментарий (необязательно)</label><textarea id="feedbackText" placeholder="Что можно улучшить?"></textarea></div><button class="primary" style="width:100%" onclick="sendFeedback()">Отправить оценку</button></div><div class="card"><h3>Зачем нужна оценка?</h3><p class="muted small">Обратная связь помогает руководителю видеть не только скорость закрытия заявок, но и качество фактического решения проблемы.</p><div class="result"><b>Оценка влияет на аналитику</b><p class="small muted">Средняя удовлетворённость, доля положительных оценок и комментарии сотрудников могут отображаться в отчётах.</p></div></div></div></section>
+      function confirmClassification() {
+        toast('Категория подтверждена и зафиксирована в истории маршрутизации');
+      }
 
-  <section class="screen" id="notifications"><div class="row" style="margin-bottom:14px"><div><h3 class="section-title">Уведомления</h3><p class="muted small">Изменения по вашим заявкам и системные события</p></div><button class="ghost" onclick="markAllRead()">Отметить все прочитанными</button></div><div class="card" id="notificationList"><div class="ticket"><div class="ticket-icon" style="background:#e0f8ee;color:#119b70">✓</div><div style="flex:1"><b>Заявка №2487 решена</b><p>Проблема с проектором устранена · Сегодня, 16:20</p></div><span class="pill green">Новое</span></div><div class="ticket"><div class="ticket-icon">⇄</div><div style="flex:1"><b>Заявка №2486 перенаправлена</b><p>Передана в АХО · Сегодня, 15:50</p></div><span class="pill">Новое</span></div><div class="ticket"><div class="ticket-icon">✉</div><div style="flex:1"><b>Новый комментарий к заявке №2485</b><p>Исполнитель запросил уточнение · Сегодня, 15:10</p></div><span class="pill">Новое</span></div><div class="ticket"><div class="ticket-icon">▥</div><div style="flex:1"><b>Еженедельная статистика готова</b><p>Отчёт за последние 7 дней · Сегодня, 14:45</p></div></div></div></section>
+      function acceptTicket(id) {
+        toast(`Заявка #${id} принята в работу`);
+        showScreen('executor');
+      }
 
-  <section class="screen" id="profile"><div class="grid two"><div class="card"><div class="row"><div style="display:flex;align-items:center;gap:13px"><div class="avatar" style="width:58px;height:58px;font-size:20px">ИИ</div><div><h3 style="margin:0">Иван Иванов</h3><p class="muted small">Сотрудник · Финансовый университет</p></div></div><span class="pill green">Активен</span></div><hr style="border:0;border-top:1px solid var(--line);margin:18px 0"><div class="field"><label>ФИО</label><input value="Иван Иванов"></div><div class="field"><label>Рабочая почта</label><input value="ivan.ivanov@university.ru"></div><div class="field"><label>Подразделение</label><input value="Учебный отдел"></div><div class="field"><label>Должность</label><input value="Специалист"></div><button class="primary" onclick="toast('Изменения профиля сохранены (демо)')">Сохранить изменения</button></div><div class="card"><h3>Настройки</h3><div class="ticket"><div style="flex:1"><b>Уведомления о статусе</b><p>Получать изменения по своим заявкам</p></div><input type="checkbox" checked></div><div class="ticket"><div style="flex:1"><b>Комментарии исполнителей</b><p>Получать сообщения и запросы уточнений</p></div><input type="checkbox" checked></div><div class="ticket"><div style="flex:1"><b>Еженедельная сводка</b><p>Получать обзор активности</p></div><input type="checkbox"></div><div class="field" style="margin-top:15px"><label>Язык интерфейса</label><select><option>Русский</option><option>English</option></select></div><button class="ghost" onclick="toast('Настройки сохранены')">Сохранить настройки</button></div></div></section>
+      function saveExecutorComment() {
+        const value = document.getElementById('executorComment').value.trim();
+        if (!value) {
+          toast('Введите комментарий исполнителя');
+          return;
+        }
+        toast('Комментарий сохранён и отражён в истории заявки');
+      }
 
-  <section class="screen" id="reports"><div class="card"><div class="row"><div><h3>Отчёты и выгрузки</h3><p class="muted small">Сводные данные по обработке заявок</p></div><select class="chip"><option>Последние 30 дней</option><option>Последние 7 дней</option><option>Последние 90 дней</option></select></div><div class="grid three"><div class="result"><span class="muted small">Создано</span><h2>248</h2><span class="positive small">+12% к прошлому периоду</span></div><div class="result"><span class="muted small">Решено</span><h2>220</h2><span class="positive small">+8%</span></div><div class="result"><span class="muted small">Перенаправлено</span><h2>23</h2><span class="negative small">8% от всех заявок</span></div></div><h3 style="margin-top:20px">Состав отчёта</h3><div class="ticket"><div style="flex:1"><b>Сводка по подразделениям</b><p>Объём, среднее время, SLA и просрочки</p></div><span class="pill green">Готово</span></div><div class="ticket"><div style="flex:1"><b>История перенаправлений</b><p>Причины, исходные и целевые подразделения</p></div><span class="pill green">Готово</span></div><div class="ticket"><div style="flex:1"><b>Качество классификации</b><p>Ошибки и уверенность AI</p></div><span class="pill green">Готово</span></div><div class="row" style="margin-top:18px"><button class="ghost" onclick="exportCSV()">↓ Скачать CSV</button><button class="primary" onclick="window.print()">Печать / PDF</button></div></div></section>
+      function rerouteTicket() {
+        const dept = document.getElementById('rerouteDept').value;
+        const reason = document.getElementById('rerouteReason').value.trim();
+        if (!reason) {
+          toast('Укажите причину перенаправления');
+          return;
+        }
+        state.reroutesKpi = (state.reroutesKpi || 23) + 1;
+        toast(`Заявка перенаправлена: ${dept}`);
+        showScreen('history');
+      }
 
-  <nav class="mobile-nav" id="mobileNav"><button class="active" data-screen="dashboard">⌂<br>Главная</button><button data-screen="create">＋<br>Создать</button><button data-screen="requests">▤<br>Заявки</button><button data-screen="manager">▥<br>Аналитика</button><button data-screen="ai">✧<br>AI</button></nav>
-</main></div><div class="toast" id="toast"></div>
-<script>
-const titles={dashboard:['Главная','Ваши заявки и актуальная информация'],create:['Создание заявки','Опишите проблему — RouteDesk поможет определить маршрут'],requests:['Мои заявки','Отслеживайте статусы и ход обработки'],history:['История обработки','Полная история движения заявки между подразделениями'],manager:['Управленческая панель','Ключевые показатели эффективности процессов'],departments:['Аналитика подразделений','Сравнение нагрузки и скорости обработки'],workload:['Нагрузка и узкие места','Где заявки ожидают дольше всего'],ai:['Качество AI','Метрики качества и сравнение моделей'],classification:['Результат AI-классификации','Проверьте рекомендацию модели перед отправкой'],inbox:['Входящие заявки','Очередь заявок для исполнителя'],executor:['Работа исполнителя','Обработка и обновление статуса заявки'],reroute:['Перенаправление заявки','Выберите правильное подразделение и зафиксируйте причину'],complete:['Завершение заявки','Зафиксируйте результат выполненной работы'],feedback:['Оценка решения','Обратная связь от автора заявки'],notifications:['Уведомления','События и изменения по заявкам'],profile:['Профиль и настройки','Личные данные и параметры уведомлений'],reports:['Отчёты','Сводная статистика и выгрузки']};
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));document.querySelectorAll('[data-screen]').forEach(b=>b.classList.toggle('active',b.dataset.screen===id));document.getElementById('pageTitle').textContent=titles[id][0];document.getElementById('pageSubtitle').textContent=titles[id][1];window.scrollTo({top:0,behavior:'smooth'});}
-document.querySelectorAll('[data-screen]').forEach(b=>b.addEventListener('click',()=>showScreen(b.dataset.screen)));
-document.getElementById('attachment').addEventListener('change',e=>{document.getElementById('fileName').textContent=e.target.files[0]?.name||'Файл не выбран'});
-let newTicketId=2488;
-function analyzeRequest(){const d=document.getElementById('description').value.trim();if(!d){toast('Сначала опишите проблему');return}let c=document.getElementById('category').value;const text=d.toLowerCase();if(c==='Автоматически'){if(/отпуск|справк|зарплат|кадр|трудов/.test(text))c='Кадры';else if(/бух|счет|оплат|акт|финанс/.test(text))c='Бухгалтерия';else if(/аудитор|кабинет|батар|мебел|уборк|вода|сантех/.test(text))c='АХО';else if(/занят|расписан|студент|экзамен|учеб/.test(text))c='Учебный отдел';else c='IT'}const deps={'IT':'Отдел технической поддержки','АХО':'Административно-хозяйственный отдел','Кадры':'Отдел кадров','Бухгалтерия':'Бухгалтерия','Учебный отдел':'Учебный отдел'};const conf=/проект|компьют|принтер|сеть|доступ/.test(text)?92:/отпуск|зарплат|справк/.test(text)?89:/аудитор|кабинет|батар/.test(text)?86:74;document.getElementById('predCategory').textContent=c;document.getElementById('predDept').textContent=deps[c];document.getElementById('predConfidence').textContent=conf+'%';document.getElementById('predPriority').textContent=document.getElementById('priority').value;document.getElementById('confirmCategory').value=c;document.getElementById('reasonText').textContent=conf<70?'Уверенность невысокая: проверьте категорию вручную.':'Рекомендация основана на ключевых словах из описания заявки.';document.getElementById('analysisResult').style.display='block';toast('AI-анализ завершён (демо-режим)')}
-function submitTicket(){const d=document.getElementById('description').value.trim();if(!d){toast('Добавьте описание заявки');return}const id=newTicketId++;const cat=document.getElementById('confirmCategory').value;const tr=document.createElement('tr');tr.innerHTML=`<td>#${id}</td><td>${escapeHtml(d)}</td><td>${cat}</td><td><span class="pill orange">Назначена</span></td><td>${document.getElementById('priority').value}</td><td>Сегодня</td>`;document.getElementById('requestsTable').prepend(tr);document.getElementById('totalKpi').textContent='249';document.getElementById('recentList').insertAdjacentHTML('afterbegin',`<div class="ticket"><div class="ticket-icon">▣</div><div style="flex:1"><b>${escapeHtml(d)}</b><p>№${id} · ${cat} · Только что</p></div><span class="pill orange">Назначена</span></div>`);toast('Заявка №'+id+' создана и добавлена в список');document.getElementById('description').value='';document.getElementById('analysisResult').style.display='none';showScreen('requests')}
-function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function filterRequests(status,btn){document.querySelectorAll('#requests .tabs button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('#requestsTable tr').forEach((r,i)=>{const text=r.innerText;r.style.display=status==='Все'||text.includes(status)?'':'none'})}
-let toastTimer;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2600)}
+      function completeTicket() {
+        const text = document.getElementById('resolutionText').value.trim();
+        if (!text) {
+          toast('Опишите результат выполненной работы');
+          return;
+        }
+        toast('Заявка закрыта. История и KPI обновлены.');
+        showScreen('dashboard');
+      }
 
-function confirmClassification(){const c=document.getElementById('classSelect').value;document.getElementById('classCategory').textContent=c;toast('Категория «'+c+'» подтверждена');}
-function toggleInbox(priority,btn){document.querySelectorAll('#inbox .tabs button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.inbox-item').forEach(el=>el.style.display=priority==='all'||el.dataset.priority===priority?'':'none')}
-function acceptTicket(id){toast('Заявка №'+id+' принята в работу');showScreen('executor')}
-function rerouteTicket(){const d=document.getElementById('rerouteDept').value;toast('Заявка перенаправлена: '+d);showScreen('history')}
-function saveExecutorComment(){const c=document.getElementById('executorComment').value.trim();if(!c){toast('Введите комментарий');return}toast('Комментарий сохранён')}
-function completeTicket(){const t=document.getElementById('resolutionText').value.trim();if(!t){toast('Опишите результат выполненной работы');return}toast('Заявка закрыта. Автору отправлено уведомление');showScreen('feedback')}
-let currentRating=1;function setRating(n,btn){currentRating=n;document.querySelectorAll('#ratingTabs button').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
-function sendFeedback(){toast('Спасибо! Оценка '+currentRating+'/5 сохранена');showScreen('dashboard')}
-function markAllRead(){document.querySelectorAll('#notificationList .pill').forEach(p=>{p.className='pill';p.textContent='Прочитано'});toast('Все уведомления отмечены прочитанными')}
-function exportCSV(){const rows=[['Подразделение','Заявки','Среднее время','SLA'],['IT','82','1.8 ч','96%'],['АХО','69','2.6 ч','90%'],['Кадры','48','2.1 ч','93%'],['Бухгалтерия','29','2.9 ч','88%'],['Учебный отдел','20','2.2 ч','91%']];const csv='\ufeff'+rows.map(r=>r.join(';')).join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='routedesk-report.csv';a.click();URL.revokeObjectURL(a.href)}
-document.getElementById('resolutionFile').addEventListener('change',e=>{document.getElementById('resolutionFileName').textContent=e.target.files[0]?.name||'Файл не выбран'});
-</script>
-</body>
+      function setRating(value, btn) {
+        state.currentRating = value;
+        document.querySelectorAll('#ratingTabs button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+
+      document.querySelectorAll('#ratingTabs button').forEach(btn => {
+        btn.addEventListener('click', () => setRating(Number(btn.textContent.trim()), btn));
+      });
+
+      function sendFeedback() {
+        toast(`Спасибо! Оценка ${state.currentRating}/5 сохранена`);
+        showScreen('dashboard');
+      }
+
+      function markAllRead() {
+        document.querySelectorAll('#notificationList .tag').forEach(tag => {
+          tag.textContent = 'Прочитано';
+          tag.className = 'tag green';
+        });
+        toast('Все уведомления отмечены как прочитанные');
+      }
+
+      function exportCSV() {
+        const rows = [
+          ['Подразделение', 'Заявки', 'Среднее время', 'SLA'],
+          ['IT', '82', '1.8 ч', '96%'],
+          ['АХО', '69', '2.6 ч', '90%'],
+          ['Кадры', '48', '2.1 ч', '93%'],
+          ['Бухгалтерия', '37', '2.9 ч', '89%']
+        ];
+        const csv = rows.map(r => r.join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'routedesk-report.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        toast('CSV экспортирован');
+      }
+
+      document.getElementById('requestAttachment')?.addEventListener('change', e => {
+        const file = e.target.files && e.target.files[0];
+        if (file) toast(`Файл прикреплён: ${file.name}`);
+      });
+
+      document.getElementById('resolutionFile')?.addEventListener('change', e => {
+        const file = e.target.files && e.target.files[0];
+        if (file) toast(`Подтверждение добавлено: ${file.name}`);
+      });
+    </script>
+  </body>
 </html>
