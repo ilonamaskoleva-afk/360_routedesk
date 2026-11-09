@@ -30,17 +30,9 @@ Open `http://localhost:8000/docs` for the interactive API. SQLite data is stored
 - `POST /api/tickets/{id}/feedback` — save requester rating
 - `GET /api/metrics` — ticket counts, reroutes, confidence and department volumes
 
-### Create ticket example
+## Connected frontend
 
-```bash
-curl -X POST http://localhost:8000/api/tickets \\
-  -H 'Content-Type: application/json' \\
-  -d '{"description":"В аудитории 305 не работает проектор, завтра лекция","requester":"Иван Иванов"}'
-```
-
-## Connect the HTML prototype
-
-Serve the HTML and API locally. The API allows CORS origins `*` for the demo by default; set `CORS_ORIGINS` to a comma-separated allowlist outside local development. The current prototype still has its own demo interactions and does not yet call these endpoints.
+The API-connected HTML client is `frontend/index.html`. Start the whole stack with `docker compose up --build`, then open `http://localhost:8080`. It calls the API to preview classifications, create/list requests, assign, reroute with a required reason, resolve, fetch event history and refresh real metrics. The legacy visual prototype remains at the repository root.
 
 ## Production gaps (not implemented)
 

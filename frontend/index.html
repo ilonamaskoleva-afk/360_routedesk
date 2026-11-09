@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#222653">
+  <title>RouteDesk — рабочее пространство</title>
+  <style>
+    :root{font-family:Inter,"Segoe UI",Arial,sans-serif;color:#191d4d;background:#f3f5ff;--purple:#5a4ae3;--line:#e6e9f7;--muted:#667092;--green:#17a979;--amber:#e6952f;--red:#e55360}
+    *{box-sizing:border-box}body{margin:0}button,input,textarea,select{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-weight:700}.primary{background:linear-gradient(135deg,#5947dc,#7b68ff);color:white}.secondary{background:#eeedff;color:#5141ce}.danger{background:#ffeded;color:#bc3545}.shell{max-width:1450px;margin:auto;padding:20px;display:grid;grid-template-columns:235px 1fr;gap:20px;min-height:100vh}.side{background:#222653;color:white;border-radius:22px;padding:22px 15px;display:flex;flex-direction:column}.brand{font-size:24px;font-weight:800;padding:7px 8px 22px}.brand span{background:#7464f4;border-radius:10px;padding:5px 9px;margin-right:6px}.nav{color:#d6d9ef;font-size:13px;line-height:1.55}.nav p{margin:8px}.nav small{display:block;color:#a6accd;padding:12px 8px 4px;text-transform:uppercase;letter-spacing:.1em}.foot{margin-top:auto;color:#bec3df;font-size:12px;padding:16px 8px 2px}.main{min-width:0}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:6px 2px 18px}.top h1{margin:0;font-size:26px;letter-spacing:-.04em}.top p{margin:5px 0;color:var(--muted);font-size:14px}.health{font-size:12px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 12px;white-space:nowrap}.health:before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:#aaa;margin-right:7px}.health.ok:before{background:var(--green)}.health.bad:before{background:var(--red)}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}.metric,.panel{background:#fff;border:1px solid var(--line);border-radius:17px;padding:16px;box-shadow:0 8px 25px #29326b08}.metric span{display:block;color:var(--muted);font-size:12px}.metric strong{font-size:25px;display:block;margin-top:7px;letter-spacing:-.04em}.columns{display:grid;grid-template-columns:minmax(320px,.9fr) minmax(420px,1.3fr);gap:14px}.panel h2{font-size:17px;margin:0 0 14px}.field{display:grid;gap:6px;margin:12px 0}.field label{font-size:12px;font-weight:700;color:var(--muted)}input,textarea,select{border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#fff;color:#191d4d;width:100%}textarea{min-height:104px;resize:vertical}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.statusline{font-size:12px;color:var(--muted);min-height:18px;margin-top:8px}.ticket-list{display:grid;gap:8px;max-height:370px;overflow:auto}.ticket{border:1px solid var(--line);border-radius:12px;padding:11px;cursor:pointer;background:#fff}.ticket:hover,.ticket.selected{border-color:#9c91ff;background:#f8f7ff}.ticket-head{display:flex;justify-content:space-between;gap:8px}.ticket p{font-size:12px;color:var(--muted);margin:7px 0 0}.badge{display:inline-block;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:800;background:#eeedff;color:#5848cf;white-space:nowrap}.badge.ok{background:#e8faf3;color:#14865f}.badge.warn{background:#fff4e2;color:#aa6a11}.detail{margin-top:14px}.empty{color:var(--muted);font-size:13px;padding:20px;text-align:center;border:1px dashed var(--line);border-radius:12px}.detail-title{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.detail-title h3{margin:0;font-size:16px}.meta{font-size:12px;color:var(--muted);line-height:1.8;margin:10px 0}.timeline{display:grid;gap:8px;margin:10px 0}.event{border-left:2px solid #dcd8ff;padding:3px 0 4px 11px;font-size:12px}.event strong{display:block}.event small{display:block;color:var(--muted);margin-top:3px}.reroute{border-top:1px solid var(--line);margin-top:14px;padding-top:12px}.toast{position:fixed;bottom:18px;right:18px;background:#202650;color:white;padding:12px 16px;border-radius:11px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;max-width:min(420px,calc(100vw - 36px));z-index:5}.toast.show{opacity:1;transform:none}.section-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;margin:16px 0 8px}.small{font-size:11px;color:var(--muted)}
+    @media(max-width:980px){.shell{grid-template-columns:1fr;padding:12px}.side{display:none}.columns{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:520px){.metrics{gap:7px}.metric{padding:12px}.metric strong{font-size:20px}.top{align-items:flex-start;flex-direction:column}.panel{padding:13px}.columns{display:block}.columns>.panel+ .panel{margin-top:12px}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="side">
+      <div class="brand"><span>ϟ</span>RouteDesk</div>
+      <div class="nav"><small>Рабочее пространство</small><p>⌂ &nbsp; Обзор и метрики</p><p>＋ &nbsp; Создание и маршрутизация</p><p>▤ &nbsp; Заявки и история</p><p>⇄ &nbsp; Управление процессом</p><p>✧ &nbsp; Демо-классификатор</p></div>
+      <div class="foot">MVP · API-driven demo<br>Состояние и метрики загружаются из backend</div>
+    </aside>
+    <main class="main">
+      <header class="top">
+        <div><h1>RouteDesk · Операционный центр</h1><p>Создайте обращение, проверьте маршрут и проведите его до решения.</p></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span id="health" class="health">Проверка API…</span><button class="secondary" id="refreshBtn">Обновить</button></div>
+      </header>
+      <section class="metrics" aria-label="Метрики">
+        <div class="metric"><span>Всего заявок</span><strong id="metricTotal">—</strong></div>
+        <div class="metric"><span>Открытые</span><strong id="metricOpen">—</strong></div>
+        <div class="metric"><span>Решённые</span><strong id="metricResolved">—</strong></div>
+        <div class="metric"><span>Перенаправления</span><strong id="metricReroutes">—</strong></div>
+      </section>
+      <div class="columns">
+        <section class="panel">
+          <h2>1 · Создать заявку</h2>
+          <div class="field"><label for="description">Описание обращения</label><textarea id="description" placeholder="Например: В аудитории 305 не работает проектор, завтра лекция"></textarea></div>
+          <div class="field"><label for="requester">Автор</label><input id="requester" value="Иван Иванов" maxlength="120"></div>
+          <div class="field"><label for="priority">Приоритет (можно оставить автоматический)</label><select id="priority"><option value="">Автоматически</option><option>Низкий</option><option>Средний</option><option>Высокий</option><option>Критический</option></select></div>
+          <div class="actions"><button class="secondary" id="classifyBtn">Предпросмотр AI-маршрута</button><button class="primary" id="createBtn">Создать и направить</button></div>
+          <div class="statusline" id="formMessage" role="status"></div>
+          <div id="classification" class="empty">Результат маршрутизации появится здесь.</div>
+        </section>
+        <section class="panel">
+          <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h2 style="margin-bottom:0">2 · Заявки и workflow</h2><button class="secondary" id="listBtn">Загрузить список</button></div>
+          <div class="field"><label for="filterDepartment">Фильтр по отделу</label><select id="filterDepartment"><option value="">Все подразделения</option><option>Техническая поддержка</option><option>Администрация</option><option>HR</option><option>Бухгалтерия</option><option>Учебный отдел</option><option>Ручная проверка</option></select></div>
+          <div id="tickets" class="ticket-list"><div class="empty">Загрузка заявок…</div></div>
+          <div id="ticketDetail" class="detail"><div class="empty">Выберите заявку, чтобы назначить исполнителя, перенаправить или закрыть её.</div></div>
+        </section>
+      </div>
+      <p class="small" style="margin:12px 2px">Классификатор backend — демонстрационные правила, не обученная/проверенная модель. Данные не следует использовать как реальные AI-метрики.</p>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script>
+(() => {
+  const API = new URLSearchParams(location.search).get('api') || localStorage.getItem('routedesk-api') || 'http://localhost:8000';
+  const state = { selectedId: null, tickets: [] };
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  let toastTimer;
+  function toast(message) { const el=$('toast'); el.textContent=message; el.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),2500); }
+  async function api(path, options={}) {
+    const response = await fetch(API + path, { ...options, headers: { 'Content-Type':'application/json', ...(options.headers || {}) } });
+    const body = await response.json().catch(()=>({detail:response.statusText}));
+    if (!response.ok) throw new Error(body.detail || `API error ${response.status}`);
+    return body;
+  }
+  const prettyStatus = s => ({new:'Новая',assigned:'Назначена',in_progress:'В работе',resolved:'Решена',closed:'Закрыта'})[s] || s;
+  function setHealth(ok, text) { $('health').textContent=text; $('health').className='health '+(ok?'ok':'bad'); }
+  async function refreshMetrics() {
+    const m=await api('/api/metrics');
+    $('metricTotal').textContent=m.total_tickets;
+    $('metricOpen').textContent=m.open_tickets;
+    $('metricResolved').textContent=m.resolved_tickets;
+    $('metricReroutes').textContent=m.reroutes;
+  }
+  async function checkHealth() {
+    try { await api('/api/health'); setHealth(true,'API подключён'); }
+    catch (e) { setHealth(false,'API недоступен'); $('formMessage').textContent=`Не удалось подключиться к ${API}. Запустите backend и обновите страницу.`; }
+  }
+  function renderClassification(data) {
+    $('classification').className='';
+    $('classification').innerHTML=`<div class="section-label" style="margin-top:0">Результат классификации · demo rules</div><div><strong>${esc(data.category)}</strong> → ${esc(data.department)}</div><div class="meta">Приоритет: <b>${esc(data.priority)}</b> · Уверенность: <b>${Math.round(data.confidence*100)}%</b><br>${esc(data.explanation)}<br><span class="small">${esc(data.note)}</span></div><span class="badge ${data.automatic_routing?'ok':'warn'}">${data.automatic_routing?'Автомаршрут по правилам':'Нужна проверка человеком'}</span>`;
+  }
+  async function preview() {
+    const description=$('description').value.trim();
+    if(description.length<5) throw new Error('Опишите проблему минимум в 5 символах.');
+    const data=await api('/api/classify',{method:'POST',body:JSON.stringify({description,priority:$('priority').value||null})});
+    renderClassification(data);
+  }
+  async function createTicket() {
+    const description=$('description').value.trim();
+    if(description.length<5) throw new Error('Опишите проблему минимум в 5 символах.');
+    const result=await api('/api/tickets',{method:'POST',body:JSON.stringify({description,requester:$('requester').value.trim()||'Демо-сотрудник',priority:$('priority').value||null})});
+    state.selectedId=result.id;
+    toast(`Заявка #${result.id} создана · ${result.department}`);
+    $('formMessage').textContent=`Заявка #${result.id} создана и направлена в ${result.department}.`;
+    await loadTickets(); await refreshMetrics(); await selectTicket(result.id);
+  }
+  async function loadTickets() {
+    const department=$('filterDepartment').value;
+    const q=new URLSearchParams({limit:'100'}); if(department) q.set('department',department);
+    const tickets=await api('/api/tickets?'+q.toString()); state.tickets=tickets;
+    $('tickets').innerHTML=tickets.length ? tickets.map(t=>`<div class="ticket ${state.selectedId===t.id?'selected':''}" data-id="${t.id}"><div class="ticket-head"><strong>#${t.id} · ${esc(t.title)}</strong><span class="badge ${['resolved','closed'].includes(t.status)?'ok':t.status==='in_progress'?'warn':''}">${esc(prettyStatus(t.status))}</span></div><p>${esc(t.category)} · ${esc(t.department)} · ${esc(t.priority)}</p></div>`).join('') : '<div class="empty">Заявок пока нет. Создайте первую слева.</div>';
+    document.querySelectorAll('.ticket[data-id]').forEach(el=>el.addEventListener('click',()=>selectTicket(Number(el.dataset.id))));
+  }
+  async function selectTicket(id) {
+    state.selectedId=id;
+    const [ticket,events]=await Promise.all([api(`/api/tickets/${id}`),api(`/api/tickets/${id}/events`)]);
+    await loadTickets();
+    const closed=['resolved','closed'].includes(ticket.status);
+    $('ticketDetail').innerHTML=`<div class="panel" style="padding:14px;background:#fbfbff"><div class="detail-title"><h3>#${ticket.id} · ${esc(ticket.title)}</h3><span class="badge ${closed?'ok':'warn'}">${esc(prettyStatus(ticket.status))}</span></div><div class="meta">${esc(ticket.description)}<br>Категория: <b>${esc(ticket.category)}</b> · Отдел: <b>${esc(ticket.department)}</b><br>Приоритет: ${esc(ticket.priority)} · Уверенность: ${Math.round(ticket.confidence*100)}%<br>Автор: ${esc(ticket.requester)} · Исполнитель: ${esc(ticket.assignee||'не назначен')}</div><div class="actions">${!closed?`<button class="secondary" id="assignBtn">Принять в работу</button><button class="primary" id="closeBtn">Закрыть как решённую</button>`:'<span class="badge ok">Жизненный цикл завершён</span>'}</div><div class="reroute"><div class="section-label" style="margin-top:0">Перенаправить с причиной</div><div class="field"><select id="rerouteDepartment"><option>Техническая поддержка</option><option>Администрация</option><option>HR</option><option>Бухгалтерия</option><option>Учебный отдел</option><option>Ручная проверка</option></select></div><div class="field"><textarea id="rerouteReason" placeholder="Почему заявка передаётся другому отделу?" style="min-height:65px"></textarea></div><button class="secondary" id="rerouteBtn">Перенаправить</button></div><div class="section-label">История событий</div><div class="timeline">${events.map(e=>`<div class="event"><strong>${esc(e.event_type)} · ${esc(e.actor)}</strong>${esc(e.details)}${e.from_department||e.to_department?` · ${esc(e.from_department||'—')} → ${esc(e.to_department||'—')}`:''}<small>${new Date(e.created_at).toLocaleString('ru-RU')}</small></div>`).join('')||'<div class="small">История пока пуста</div>'}</div></div>`;
+    if(!closed) {
+      $('assignBtn').addEventListener('click',()=>runAction(async()=>{await api(`/api/tickets/${id}`,{method:'PATCH',body:JSON.stringify({status:'in_progress',assignee:'Исполнитель демо',actor:'Исполнитель'})});toast('Заявка принята в работу');await afterChange(id);}));
+      $('closeBtn').addEventListener('click',()=>runAction(async()=>{await api(`/api/tickets/${id}`,{method:'PATCH',body:JSON.stringify({status:'resolved',actor:'Исполнитель',comment:'Решение подтверждено'})});toast('Заявка закрыта как решённая');await afterChange(id);}));
+    }
+    $('rerouteBtn').addEventListener('click',()=>runAction(async()=>{const department=$('rerouteDepartment').value;const reason=$('rerouteReason').value.trim();if(reason.length<3)throw new Error('Укажите причину перенаправления.');await api(`/api/tickets/${id}/reroute`,{method:'POST',body:JSON.stringify({department,reason,actor:'Исполнитель'})});toast(`Заявка направлена: ${department}`);await afterChange(id);}));
+  }
+  async function afterChange(id){await refreshMetrics();await selectTicket(id);}
+  async function runAction(action){try{await action()}catch(e){toast(e.message)}}
+  async function init() {
+    $('createBtn').addEventListener('click',()=>runAction(createTicket));
+    $('classifyBtn').addEventListener('click',()=>runAction(preview));
+    $('refreshBtn').addEventListener('click',()=>runAction(async()=>{await checkHealth();await refreshMetrics();await loadTickets();toast('Данные обновлены')}));
+    $('listBtn').addEventListener('click',()=>runAction(loadTickets));
+    $('filterDepartment').addEventListener('change',()=>runAction(loadTickets));
+    try { await checkHealth(); await refreshMetrics(); await loadTickets(); }
+    catch(e){setHealth(false,'API недоступен');toast(e.message)}
+  }
+  init();
+})();
+</script>
+</body>
+</html>

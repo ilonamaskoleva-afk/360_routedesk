@@ -1,17 +1,32 @@
-# RouteDesk
+# RouteDesk backend and connected web demo
 
-RouteDesk is an internal-request routing and process-visibility prototype. The repository currently includes a standalone HTML demo and a FastAPI MVP backend.
+RouteDesk currently has a standalone prototype and an API-connected workflow demo.
 
-## Backend
+## Start the complete demo
 
-See [backend/README.md](backend/README.md) for setup, API endpoints, sample requests, and production limitations.
-
-Quick start with Docker:
+Requires Docker Compose:
 
 ```bash
 docker compose up --build
 ```
 
-API documentation: `http://localhost:8000/docs`.
+Open `http://localhost:8080`. FastAPI docs are at `http://localhost:8000/docs`; health check is `http://localhost:8000/api/health`. The HTML UI loads tickets, history and metrics from the API and supports create → classify/route → assign → reroute → resolve → metrics refresh.
 
-The routing classifier is rule-based demo logic, not a validated ML model. Metrics shown by the HTML prototype are sample/demo values; they should not be presented as measured pilot outcomes.
+## Run without Docker
+
+Start the API from the repository root:
+
+```bash
+cd backend
+python -m venv .venv
+# Windows: .venv\\Scripts\\activate
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+Then serve `frontend/index.html` using any static web server (for example `python -m http.server 8080` from `frontend/`) and open `http://localhost:8080`.
+
+The frontend defaults to `http://localhost:8000` for the API. Override it with `?api=http://your-api-host:8000` if needed. CORS origins are configured through the backend `CORS_ORIGINS` environment variable.
+
+The original UI prototype remains available in `routedesk_prototype (1).html`. See [backend/README.md](backend/README.md) for API details and production limitations.
