@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RouteDesk — MVP</title>
+<style>
+:root{--ink:#171b45;--muted:#73799f;--purple:#5638dc;--purple2:#765df1;--blue:#4389f5;--pale:#f2f1ff;--line:#e7e8fb;--green:#18b981;--orange:#f59a37;--red:#ef626e;--shadow:0 18px 50px rgba(65,66,145,.13)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%}body{background:linear-gradient(135deg,#f4f3ff,#e9edff);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink)}
+button,input,textarea,select{font:inherit}button{cursor:pointer}a{color:var(--purple)}
+.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr;gap:24px;padding:24px;max-width:1500px;margin:auto}
+.sidebar{background:#222653;color:#fff;border-radius:24px;padding:24px 16px;display:flex;flex-direction:column;min-height:calc(100vh - 48px);box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;padding:4px 10px 24px}
+.brandmark{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#8e7aff,#4d31d3);display:grid;place-items:center;font-size:20px}
+.nav{display:grid;gap:7px}.nav button{border:0;background:transparent;color:#d8dafa;padding:13px 12px;border-radius:13px;text-align:left;display:flex;gap:12px;align-items:center;font-size:14px}
+.nav button.active,.nav button:hover{background:linear-gradient(90deg,#654ce6,#7762ee);color:#fff}.nav .ico{width:20px;text-align:center;font-size:17px}
+.user{margin-top:auto;border-top:1px solid #414574;padding:18px 8px 0;display:flex;align-items:center;gap:10px;font-size:13px}
+.avatar{width:34px;height:34px;border-radius:50%;background:#8b79ef;color:#fff;display:grid;place-items:center;font-weight:700;flex:none}
+.user small{display:block;color:#bfc3e8;margin-top:3px}
+main{min-width:0}.topbar{display:flex;align-items:center;justify-content:space-between;margin:4px 4px 20px;gap:12px}
+.topbar h1{font-size:24px;margin:0}.topbar p{margin:5px 0 0;color:var(--muted);font-size:13px}.top-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chip,.ghost{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:12px;padding:10px 13px}
+.primary{border:0;border-radius:13px;background:linear-gradient(100deg,var(--purple),var(--purple2));color:white;padding:13px 18px;font-weight:700;box-shadow:0 7px 16px #6247df30}
+.primary:hover{filter:brightness(1.05)}.primary:disabled,.ghost:disabled{opacity:.5;cursor:not-allowed}
+.danger{border:0;border-radius:13px;background:#fff1f2;color:#c63b4d;padding:13px 18px;font-weight:700}
+.screen{display:none;animation:fade .22s ease}.screen.active{display:block}@keyframes fade{from{opacity:.4;transform:translateY(5px)}to{opacity:1;transform:none}}
+.grid{display:grid;gap:16px}.kpis{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px}
+.card{background:rgba(255,255,255,.94);border:1px solid #ebeafd;border-radius:19px;padding:18px;box-shadow:0 8px 25px rgba(76,77,151,.07)}
+.kpi .symbol{width:38px;height:38px;border-radius:12px;background:#eff1ff;color:var(--blue);display:grid;place-items:center;font-size:19px}
+.kpi strong{display:block;font-size:26px;margin:10px 0 3px}.muted{color:var(--muted)}.small{font-size:12px}.positive{color:var(--green)}.negative{color:var(--red)}
+.two{grid-template-columns:1.25fr .9fr}.three{grid-template-columns:repeat(3,1fr)}.card h3{font-size:15px;margin:0 0 14px}
+.chart{height:190px;width:100%;display:block}
+.donut-wrap{display:flex;align-items:center;gap:20px}
+.donut{width:142px;height:142px;border-radius:50%;position:relative;flex:none}
+.donut:after{content:attr(data-total);position:absolute;inset:27px;background:#fff;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:22px}
+.legend{display:grid;gap:10px;font-size:12px}.legend span{display:flex;align-items:center;gap:8px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.section-title{font-size:18px;margin:0 0 15px}
+.field{display:grid;gap:7px;margin-bottom:15px}.field label{font-size:13px;font-weight:650}
+.field input,.field textarea,.field select{width:100%;border:1px solid #dfe1f8;border-radius:13px;padding:13px;background:#fbfbff;color:var(--ink);outline:none}
+.field textarea{min-height:120px;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:#8978f1;box-shadow:0 0 0 3px #8c7bf122}
+.field-hint{font-size:11px;color:var(--muted)}.inline-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.upload{border:1.5px dashed #b9b5f2;border-radius:14px;padding:20px;text-align:center;background:#faf9ff;color:#6c60c7;display:block}
+.upload input{display:none}
+.result{background:linear-gradient(135deg,#f2efff,#edf4ff);border:1px solid #e3defe;border-radius:17px;padding:17px}
+.result-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.check{width:42px;height:42px;border-radius:50%;background:#d9f8ec;color:#12a979;display:grid;place-items:center;font-size:23px}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.result-grid div{background:#ffffffb8;padding:12px;border-radius:12px}.result-grid small{color:var(--muted);display:block;margin-bottom:5px}
+.pill{display:inline-flex;align-items:center;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:700;background:#eeeaff;color:#5942d4;white-space:nowrap}
+.pill.green{background:#e0f8ee;color:#119b70}.pill.orange{background:#fff1dd;color:#c47a18}.pill.red{background:#ffe8eb;color:#d44d60}.pill.blue{background:#e7f1ff;color:#2b6fd4}
+.table{width:100%;border-collapse:collapse;font-size:13px}
+.table th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;padding:12px 8px;border-bottom:1px solid var(--line)}
+.table td{padding:14px 8px;border-bottom:1px solid #f0f0fa}.table tbody tr{cursor:pointer}.table tbody tr:hover{background:#f8f7ff}
+.ticket{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid #f0f0fa}
+.ticket:last-child{border:0}.ticket-icon{width:38px;height:38px;border-radius:12px;background:#f0efff;color:#5d48dc;display:grid;place-items:center;flex:none}
+.ticket p{margin:5px 0;color:var(--muted);font-size:12px}
+.timeline{position:relative;padding-left:28px}.timeline:before{content:'';position:absolute;left:10px;top:8px;bottom:8px;width:2px;background:#dedafa}
+.step{position:relative;padding:0 0 22px}.step:before{content:'';position:absolute;left:-24px;top:2px;width:12px;height:12px;border:3px solid #fff;border-radius:50%;background:#6954e8;box-shadow:0 0 0 1px #b7aefa}
+.step.done:before{background:var(--green)}.step.current:before{background:var(--orange)}.step strong{font-size:13px}.step p{margin:4px 0;color:var(--muted);font-size:12px}
+.barline{height:8px;border-radius:99px;background:#eeedfb;overflow:hidden;flex:1}.barline i{height:100%;display:block;border-radius:99px;background:linear-gradient(90deg,#5940df,#8d7cf4)}
+.metric-line{display:flex;align-items:center;gap:12px;margin:14px 0;font-size:12px}.metric-line b{width:110px;flex:none}.metric-line em{font-style:normal;width:42px;text-align:right;flex:none}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tabs button{border:1px solid var(--line);border-radius:999px;padding:9px 13px;background:#fff;color:var(--muted);font-size:12px}
+.tabs button.active{background:var(--purple);color:#fff;border-color:var(--purple)}
+.toast{position:fixed;right:25px;bottom:25px;background:#222653;color:white;padding:14px 18px;border-radius:13px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none;z-index:20;max-width:320px}
+.toast.show{opacity:1;transform:none}.mobile-nav{display:none}
+.auth-wrap{min-height:100vh;display:grid;place-items:center;padding:24px}
+.auth-card{width:min(440px,100%);background:#fff;border-radius:28px;overflow:hidden;box-shadow:var(--shadow)}
+.auth-hero{background:linear-gradient(160deg,#5b43e6,#8a74f3);color:#fff;padding:32px 28px 26px;position:relative}
+.auth-hero h1{margin:10px 0 6px;font-size:28px}.auth-hero p{margin:0;opacity:.88;font-size:14px}
+.auth-body{padding:24px 28px 28px}
+.demo-box{background:#f6f5ff;border:1px solid #eceaff;border-radius:14px;padding:12px 14px;font-size:12px;color:#4d4f86;margin-bottom:16px}
+.demo-box b{display:block;margin-bottom:4px}
+.linkish{background:none;border:0;color:var(--purple);padding:0;font-weight:650}
+.comment{background:#f7f7ff;border-radius:14px;padding:12px;margin:10px 0}
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.badge{min-width:18px;height:18px;border-radius:99px;background:#ef626e;color:#fff;font-size:10px;display:inline-grid;place-items:center;margin-left:6px}
+.matrix td.hit{background:#e9fbf3;color:#119b70;font-weight:700}
+.hidden{display:none!important}
+.bell{position:relative}
+.bell .dot-n{position:absolute;top:6px;right:8px;width:8px;height:8px;background:var(--red);border-radius:50%}
+.empty{text-align:center;color:var(--muted);padding:28px 8px}
+@media(max-width:950px){
+  .app{grid-template-columns:1fr;padding:14px}.sidebar{display:none}
+  .mobile-nav{display:flex;position:sticky;bottom:10px;z-index:5;background:#242852;color:white;border-radius:18px;padding:8px;justify-content:space-around;box-shadow:var(--shadow);margin-top:16px}
+  .mobile-nav button{border:0;background:transparent;color:#d6d8f4;padding:9px 7px;border-radius:12px;font-size:11px}
+  .mobile-nav button.active{background:#674ee5;color:white}
+  .kpis{grid-template-columns:repeat(2,1fr)}.two,.three,.filters{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .app{padding:10px}.topbar h1{font-size:20px}.inline-fields,.result-grid{grid-template-columns:1fr}
+  .table-wrap{overflow:auto}.table{min-width:640px}
+}
+</style>
+</head>
+<body>
+<div id="authRoot"></div>
+<div id="appRoot" class="hidden"></div>
+<div class="toast" id="toast"></div>
+<script>
+const DEPTS = ['IT','АХО','Кадры','Бухгалтерия','Учебный отдел'];
+const DEPT_FULL = {
+  'IT':'Отдел технической поддержки',
+  'АХО':'Административно-хозяйственный отдел',
+  'Кадры':'Отдел кадров',
+  'Бухгалтерия':'Бухгалтерия',
+  'Учебный отдел':'Учебный отдел'
+};
+const COLORS = {IT:'#5638dc',АХО:'#4389f5',Кадры:'#f7b24b',Бухгалтерия:'#e88cae','Учебный отдел':'#8ac9d0'};
+const STATUS = ['Новая','Назначена','В работе','Перенаправлена','Решена'];
+const USERS = [
+  {id:'ivan', login:'ivan', password:'1234', name:'Иван Иванов', role:'employee', dept:'Учебный отдел', position:'Преподаватель', email:'ivan@uni.ru', phone:'+7 900 111-22-33', initials:'ИИ'},
+  {id:'petrov', login:'petrov', password:'1234', name:'Петров С.А.', role:'executor', dept:'IT', position:'Инженер техподдержки', email:'petrov@uni.ru', phone:'+7 900 222-33-44', initials:'ПС'},
+  {id:'axo', login:'axo', password:'1234', name:'Сидорова А.В.', role:'executor', dept:'АХО', position:'Специалист АХО', email:'axo@uni.ru', phone:'+7 900 333-44-55', initials:'СА'},
+  {id:'maria', login:'maria', password:'1234', name:'Мария Орлова', role:'manager', dept:'Администрация', position:'Руководитель сервиса', email:'maria@uni.ru', phone:'+7 900 555-66-77', initials:'МО'}
+];
+const STORE_KEY = 'routedesk-mvp-v1';
+
+const state = {
+  user: null,
+  screen: 'home',
+  selectedId: null,
+  authView: 'login',
+  recoverLogin: '',
+  draft: {text:'', category:'Автоматически', priority:'Средний', file:''},
+  ai: null,
+  filters: {status:'Все', category:'Все', q:'', sort:'date_desc', from:'', to:''},
+  inTab: 'mine',
+  inPrio: 'Все',
+  inSort: 'new',
+  period: 30,
+  compare: false,
+  profile: {notifyAccept:true, notifyAssign:true, notifyRedirect:true, notifyDone:true}
+};
+
+function now(){ return Date.now(); }
+function fmt(ts){
+  const d = new Date(ts);
+  const p = n => String(n).padStart(2,'0');
+  return `${p(d.getDate())}.${p(d.getMonth()+1)}.${d.getFullYear()}, ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function fmtDay(ts){
+  const d = new Date(ts);
+  const p = n => String(n).padStart(2,'0');
+  return `${p(d.getDate())}.${p(d.getMonth()+1)}.${d.getFullYear()}`;
+}
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function userById(id){ return USERS.find(u=>u.id===id); }
+function initials(u){ return (u&&u.initials)||'??'; }
+
+function seed(){
+  const t0 = new Date('2026-10-29T14:32:00').getTime();
+  const tickets = [
+    makeTicket({id:2486, title:'Протекает батарея в кабинете 214', text:'Протекает батарея в кабинете 214, лужа на полу.', category:'АХО', dept:'АХО', priority:'Средний', status:'Назначена', authorId:'ivan', assigneeId:null, confidence:88, createdAt:t0-42*60000, keywords:['батарея','кабинет']}),
+    makeTicket({id:2485, title:'Оформление отпуска', text:'Нужно оформить отпуск с 10 ноября.', category:'Кадры', dept:'Кадры', priority:'Низкий', status:'Решена', authorId:'ivan', assigneeId:'maria', confidence:91, createdAt:t0-2*86400000, resolvedAt:t0-1.5*86400000, keywords:['отпуск']}),
+    makeTicket({id:2484, title:'Консультация по учебному процессу', text:'Нужна консультация по учебному процессу для группы ИТ-21.', category:'Учебный отдел', dept:'Учебный отдел', priority:'Средний', status:'Назначена', authorId:'ivan', assigneeId:null, confidence:84, createdAt:t0-3*86400000, keywords:['учебный процесс']}),
+    makeTicket({id:2489, title:'Проблема с доступом к учебной системе', text:'Не открывается личный кабинет, пишет ошибку доступа.', category:'IT', dept:'IT', priority:'Высокий', status:'Новая', authorId:'ivan', assigneeId:null, confidence:90, createdAt:t0+18*60000, keywords:['доступ','система']}),
+    makeTicket({id:2488, title:'Протекает батарея в кабинете 214', text:'Повторно: протекает батарея в кабинете 214.', category:'АХО', dept:'АХО', priority:'Средний', status:'Новая', authorId:'ivan', assigneeId:null, confidence:87, createdAt:t0+8*60000, keywords:['батарея']})
+  ];
+  tickets[1].history.push({t:tickets[1].createdAt+3600000, title:'Решена', text:'Документы оформлены.', userId:'maria', kind:'done'});
+  tickets[1].comments.push({t:tickets[1].createdAt+3500000, userId:'maria', text:'Приказ подготовлен, отпуск согласован.'});
+  const notifications = [
+    {id:1, userId:'ivan', ticketId:2485, type:'done', text:'Заявка №2485 решена', t:tickets[1].createdAt+3600000, read:false},
+    {id:2, userId:'petrov', ticketId:2489, type:'new', text:'Новая заявка №2489 в вашем отделе', t:tickets[3].createdAt, read:false}
+  ];
+  return {tickets, notifications, nextId:2490, nextNid:3};
+}
+
+function makeTicket(p){
+  const t = p.createdAt || now();
+  return {
+    id:p.id, title:p.title, text:p.text, category:p.category, dept:p.dept,
+    priority:p.priority, status:p.status, authorId:p.authorId, assigneeId:p.assigneeId||null,
+    confidence:p.confidence, explanation:p.explanation || `Ключевые слова: «${(p.keywords||[]).join('», «')}»`,
+    createdAt:t, resolvedAt:p.resolvedAt||null, file:p.file||'',
+    redirects:p.redirects||0, visited:[p.dept],
+    history:[
+      {t, title:'Создана', text:'Сотрудник '+ (userById(p.authorId)||{}).name, userId:p.authorId, kind:'created'},
+      {t:t+60000, title:'Классифицирована', text:`${p.category} · ${p.confidence}%`, userId:'ai', kind:'ai'},
+      {t:t+120000, title:'Назначена', text:DEPT_FULL[p.dept], userId:'ai', kind:'assign'}
+    ],
+    comments:[]
+  };
+}
+
+function loadDB(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw){
+      const db = JSON.parse(raw);
+      if(db && Array.isArray(db.tickets)) return db;
+    }
+  }catch(e){}
+  const db = seed();
+  saveDB(db);
+  return db;
+}
+function saveDB(db){ localStorage.setItem(STORE_KEY, JSON.stringify(db)); }
+let db = loadDB();
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._tm); toast._tm = setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+function classify(text, manual){
+  const s = (text||'').toLowerCase();
+  let category = manual && manual!=='Автоматически' ? manual : null;
+  let keywords = [];
+  let confidence = 74;
+  if(!category){
+    if(/проект|компьютер|принтер|монитор|wi-?fi|сеть|доступ|логин|почт|vpn|ноутбук|техподдерж/.test(s)){
+      category='IT'; keywords=[]; confidence=92;
+      if(/проект/.test(s)) keywords.push('проектор');
+      if(/аудитор|кабинет/.test(s)) keywords.push(s.match(/аудитор\w*/)?.[0] || 'аудитория');
+      if(/компьютер/.test(s)) keywords.push('компьютер');
+      if(/доступ|логин/.test(s)) keywords.push('доступ');
+      if(/принтер/.test(s)) keywords.push('принтер');
+      if(!keywords.length) keywords=['оборудование'];
+    } else if(/отпуск|справк|кадр|трудов|больнич|прием на работ/.test(s)){
+      category='Кадры'; keywords=['кадры']; confidence=89;
+    } else if(/бух|счет|оплат|акт|финанс|зарплат|командировоч/.test(s)){
+      category='Бухгалтерия'; keywords=['оплата']; confidence=86;
+    } else if(/занят|расписан|студент|экзамен|учебн|групп/.test(s)){
+      category='Учебный отдел'; keywords=['учебный процесс']; confidence=84;
+    } else if(/батар|мебел|уборк|вода|сантех|отоплен|окно|дверь|ключ/.test(s)){
+      category='АХО'; keywords=['хозяйство']; confidence=86;
+    } else if(/аудитор|кабинет/.test(s)){
+      category='АХО'; keywords=['кабинет']; confidence=78;
+    } else {
+      category='IT'; keywords=['общее обращение']; confidence=62;
+    }
+  } else {
+    keywords = ['указано вручную'];
+    confidence = 99;
+  }
+  if(/завтра|лекц|срочно|не работает/.test(s) && category==='IT') confidence = Math.max(confidence, 92);
+  return {
+    category,
+    dept: category,
+    deptName: DEPT_FULL[category],
+    confidence,
+    explanation: confidence<70
+      ? 'Уверенность невысокая: проверьте категорию вручную.'
+      : `Ключевые слова: «${keywords.filter(Boolean).slice(0,3).join('», «')}»`
+  };
+}
+
+function addHistory(ticket, title, text, kind){
+  ticket.history.push({t:now(), title, text, userId:state.user.id, kind});
+}
+function notify(userId, ticketId, type, text){
+  db.notifications.unshift({id:db.nextNid++, userId, ticketId, type, text, t:now(), read:false});
+}
+function unreadCount(){
+  return db.notifications.filter(n=>n.userId===state.user.id && !n.read).length;
+}
+
+function pillStatus(st){
+  if(st==='Решена') return 'green';
+  if(st==='В работе') return '';
+  if(st==='Новая' || st==='Назначена') return 'orange';
+  if(st==='Перенаправлена') return 'red';
+  return 'blue';
+}
+function pillPrio(p){
+  if(p==='Высокий') return 'red';
+  if(p==='Низкий') return 'green';
+  return 'orange';
+}
+
+function roleLabel(u){
+  return {employee:'Сотрудник', executor:'Исполнитель', manager:'Руководитель'}[u.role];
+}
+
+function navItems(){
+  const u = state.user;
+  if(u.role==='employee') return [
+    ['home','⌂','Главная'],['create','＋','Создать заявку'],['tickets','▤','Мои заявки'],
+    ['notifications','🔔','Уведомления'],['profile','☺','Профиль']
+  ];
+  if(u.role==='executor') return [
+    ['incoming','📥','Входящие'],['work','⚙','В работе'],['tickets','▤','Заявки отдела'],
+    ['notifications','🔔','Уведомления'],['profile','☺','Профиль']
+  ];
+  return [
+    ['manager','▥','Панель'],['departments','▦','Подразделения'],['workload','⌁','Нагрузка'],
+    ['ai','✧','Качество AI'],['reports','▤','Отчёты'],['profile','☺','Профиль']
+  ];
+}
+
+function titles(){
+  return {
+    home:['Главная','Ваши заявки и актуальная информация'],
+    create:['Создание заявки','Опишите проблему — RouteDesk определит маршрут'],
+    tickets:['Мои заявки','Список, фильтры, поиск и сортировка'],
+    ticket:['Карточка заявки','Описание, маршрут, комментарии и история'],
+    notifications:['Уведомления','Принята, назначена, перенаправлена, решена'],
+    profile:['Профиль и настройки','Контакты, уведомления и выход'],
+    incoming:['Входящие заявки','Заявки вашего подразделения'],
+    work:['Обработка заявок','Принятые вами заявки в работе'],
+    manager:['Управленческая панель','Ключевые показатели процессов'],
+    departments:['Аналитика подразделений','IT, АХО, Кадры, Бухгалтерия, Учебный отдел'],
+    workload:['Нагрузка и узкие места','Очереди, задержки и перегруз'],
+    ai:['Качество AI','Accuracy, Precision, Recall, F1 и матрица ошибок'],
+    reports:['Отчёты','Период, сравнение и выгрузка статистики']
+  }[state.screen] || ['RouteDesk',''];
+}
+
+function myTickets(){
+  const u = state.user;
+  if(u.role==='employee') return db.tickets.filter(t=>t.authorId===u.id);
+  if(u.role==='executor') return db.tickets.filter(t=>t.dept===u.dept);
+  return db.tickets.slice();
+}
+
+function incomingTickets(){
+  const u = state.user;
+  let list = db.tickets.filter(t=>t.dept===u.dept && t.status!=='Решена');
+  if(state.inTab==='mine') list = list.filter(t=>!t.assigneeId || t.assigneeId===u.id);
+  if(state.inPrio!=='Все') list = list.filter(t=>t.priority===state.inPrio);
+  list.sort((a,b)=> state.inSort==='old' ? a.createdAt-b.createdAt : b.createdAt-a.createdAt);
+  return list;
+}
+
+function applyTicketFilters(list){
+  const f = state.filters;
+  return list.filter(t=>{
+    if(f.status!=='Все' && t.status!==f.status) return false;
+    if(f.category!=='Все' && t.category!==f.category) return false;
+    if(f.from && t.createdAt < new Date(f.from).getTime()) return false;
+    if(f.to && t.createdAt > new Date(f.to).getTime()+86400000) return false;
+    if(f.q){
+      const q = f.q.toLowerCase();
+      if(!String(t.id).includes(q) && !t.title.toLowerCase().includes(q) && !t.text.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  }).sort((a,b)=>{
+    if(f.sort==='prio'){
+      const r = {Высокий:3,Средний:2,Низкий:1};
+      return (r[b.priority]||0)-(r[a.priority]||0);
+    }
+    if(f.sort==='date_asc') return a.createdAt-b.createdAt;
+    return b.createdAt-a.createdAt;
+  });
+}
+
+function stats(days){
+  const from = now() - days*86400000;
+  const all = db.tickets.filter(t=>t.createdAt>=from);
+  const resolved = all.filter(t=>t.status==='Решена');
+  const avg = resolved.length
+    ? resolved.reduce((s,t)=>s+(t.resolvedAt||now())-t.createdAt,0)/resolved.length/3600000
+    : 0;
+  const redirected = all.filter(t=>t.redirects>0).length;
+  const firstOk = all.length ? Math.round(100*(all.length-redirected)/all.length) : 0;
+  const slaOk = resolved.filter(t=>((t.resolvedAt||now())-t.createdAt) <= 8*3600000).length;
+  const sla = all.length ? Math.round(100*(slaOk + all.filter(t=>t.status!=='Решена' && now()-t.createdAt<=8*3600000).length)/all.length) : 0;
+  const byCat = {};
+  DEPTS.forEach(d=> byCat[d]=all.filter(t=>t.category===d).length);
+  return {all, total:all.length, resolved:resolved.length, avg, redirected, firstOk, sla, byCat};
+}
+
+function deptStats(days){
+  const from = now()-days*86400000;
+  return DEPTS.map(d=>{
+    const list = db.tickets.filter(t=>t.dept===d && t.createdAt>=from);
+    const done = list.filter(t=>t.status==='Решена');
+    const avg = done.length ? done.reduce((s,t)=>s+(t.resolvedAt-t.createdAt),0)/done.length/3600000 : 0;
+    const overdue = list.filter(t=>{
+      const end = t.resolvedAt || now();
+      return end-t.createdAt > 8*3600000;
+    }).length;
+    const sla = list.length ? Math.round(100*(list.length-overdue)/list.length) : 100;
+    return {d, n:list.length, avg, overdue, sla, queue:list.filter(t=>t.status!=='Решена').length};
+  });
+}
+
+/* ---------- render ---------- */
+function render(){
+  if(!state.user){ renderAuth(); return; }
+  document.getElementById('authRoot').innerHTML='';
+  const app = document.getElementById('appRoot');
+  app.classList.remove('hidden');
+  const [title, sub] = titles();
+  const nav = navItems();
+  const n = unreadCount();
+  app.innerHTML = `
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="brandmark">ϟ</span> RouteDesk</div>
+      <nav class="nav">
+        ${nav.map(([id,ico,label])=>`<button class="${state.screen===id?'active':''}" data-go="${id}"><span class="ico">${ico}</span>${label}${id==='notifications'&&n?`<span class="badge">${n}</span>`:''}</button>`).join('')}
+      </nav>
+      <div class="user"><div class="avatar">${escapeHtml(state.user.initials)}</div><div>${escapeHtml(state.user.name)}<small>${roleLabel(state.user)} · ${escapeHtml(state.user.dept)}</small></div></div>
+    </aside>
+    <main>
+      <header class="topbar">
+        <div><h1>${title}</h1><p>${sub}</p></div>
+        <div class="top-actions">
+          <button class="chip bell" data-go="notifications">🔔${n?`<span class="dot-n"></span>`:''}</button>
+          ${state.user.role==='employee'?`<button class="primary" data-go="create">＋ Создать заявку</button>`:''}
+          ${state.user.role==='manager'?`<button class="chip" id="periodBtn">За ${state.period} дней ⌄</button>`:''}
+        </div>
+      </header>
+      <div id="screenMount"></div>
+      <nav class="mobile-nav">
+        ${nav.slice(0,4).map(([id,ico,label])=>`<button class="${state.screen===id?'active':''}" data-go="${id}">${ico}<br>${label.split(' ')[0]}</button>`).join('')}
+      </nav>
+    </main>
+  </div>`;
+  document.getElementById('screenMount').innerHTML = screenHTML();
+  bindApp();
+}
+
+function renderAuth(){
+  document.getElementById('appRoot').classList.add('hidden');
+  const root = document.getElementById('authRoot');
+  if(state.authView==='recover'){
+    root.innerHTML = `<div class="auth-wrap"><div class="auth-card">
+      <div class="auth-hero"><div class="brandmark">ϟ</div><h1>Восстановление доступа</h1><p>Укажите логин — отправим ссылку на корпоративную почту</p></div>
+      <div class="auth-body">
+        <div class="field"><label>Логин или email</label><input id="recLogin" placeholder="ivan или ivan@uni.ru" value="${escapeHtml(state.recoverLogin)}"></div>
+        <button class="primary" style="width:100%" id="recBtn">Отправить ссылку</button>
+        <p class="small" style="text-align:center;margin-top:16px"><button class="linkish" id="backLogin">← Назад ко входу</button></p>
+      </div></div></div>`;
+    document.getElementById('recBtn').onclick = ()=>{
+      const v = document.getElementById('recLogin').value.trim();
+      if(!v){ toast('Укажите логин или email'); return; }
+      toast('Если аккаунт существует, инструкция отправлена на почту');
+      state.authView='login'; render();
+    };
+    document.getElementById('backLogin').onclick = ()=>{ state.authView='login'; render(); };
+    return;
+  }
+  root.innerHTML = `<div class="auth-wrap"><div class="auth-card">
+    <div class="auth-hero">
+      <div class="brand" style="padding:0"><span class="brandmark">ϟ</span> RouteDesk</div>
+      <h1>Умная маршрутизация внутренних заявок</h1>
+      <p>Войдите, чтобы система определила вашу роль: сотрудник, исполнитель или руководитель</p>
+    </div>
+    <div class="auth-body">
+      <div class="demo-box"><b>Демо-доступ</b>
+        Сотрудник: ivan / 1234<br>
+        Исполнитель IT: petrov / 1234<br>
+        Исполнитель АХО: axo / 1234<br>
+        Руководитель: maria / 1234
+      </div>
+      <div class="field"><label>Логин</label><input id="login" placeholder="ivan"></div>
+      <div class="field"><label>Пароль</label><input id="password" type="password" placeholder="••••"></div>
+      <button class="primary" style="width:100%" id="loginBtn">Войти</button>
+      <p class="small" style="text-align:center;margin-top:14px"><button class="linkish" id="toRecover">Не помню пароль</button> · <button class="linkish" id="about">О системе</button></p>
+    </div></div></div>`;
+  document.getElementById('loginBtn').onclick = doLogin;
+  document.getElementById('password').onkeydown = e=>{ if(e.key==='Enter') doLogin(); };
+  document.getElementById('toRecover').onclick = ()=>{ state.authView='recover'; render(); };
+  document.getElementById('about').onclick = ()=> toast('RouteDesk классифицирует заявки, направляет в отдел и показывает аналитику маршрутизации.');
+}
+
+function doLogin(){
+  const login = document.getElementById('login').value.trim().toLowerCase();
+  const password = document.getElementById('password').value;
+  const u = USERS.find(x=>x.login===login && x.password===password);
+  if(!u){ toast('Неверный логин или пароль'); return; }
+  state.user = {...u, ...JSON.parse(localStorage.getItem('rd-profile-'+u.id)||'{}')};
+  state.screen = u.role==='executor' ? 'incoming' : u.role==='manager' ? 'manager' : 'home';
+  toast(`Вход выполнен · роль: ${roleLabel(u)}`);
+  render();
+}
+
+function bindApp(){
+  document.querySelectorAll('[data-go]').forEach(b=> b.onclick = ()=> go(b.dataset.go));
+  document.querySelectorAll('[data-open]').forEach(b=> b.onclick = ()=> openTicket(+b.dataset.open));
+  const pb = document.getElementById('periodBtn');
+  if(pb) pb.onclick = ()=>{
+    state.period = state.period===7?30:state.period===30?90:7;
+    render();
+  };
+  const handlers = window._h || {};
+  Object.keys(handlers).forEach(k=>{
+    const el = document.getElementById(k);
+    if(el) el.onclick = handlers[k];
+  });
+}
+
+function go(id){
+  state.screen = id;
+  if(id==='create'){ state.ai=null; }
+  if(id==='notifications'){
+    db.notifications.forEach(n=>{ if(n.userId===state.user.id) n.read=true; });
+    saveDB(db);
+  }
+  render();
+}
+function openTicket(id){
+  state.selectedId = id;
+  state.screen = 'ticket';
+  render();
+}
+
+function screenHTML(){
+  const s = state.screen;
+  if(s==='home') return homeHTML();
+  if(s==='create') return createHTML();
+  if(s==='tickets' || s==='work' || s==='incoming') return listHTML();
+  if(s==='ticket') return ticketHTML();
+  if(s==='notifications') return notifHTML();
+  if(s==='profile') return profileHTML();
+  if(s==='manager') return managerHTML();
+  if(s==='departments') return deptHTML();
+  if(s==='workload') return workHTML();
+  if(s==='ai') return aiHTML();
+  if(s==='reports') return reportsHTML();
+  return `<div class="card">Экран не найден</div>`;
+}
+
+function homeHTML(){
+  const mine = myTickets();
+  const active = mine.filter(t=>t.status!=='Решена').length;
+  const done = mine.filter(t=>t.status==='Решена').length;
+  const notes = db.notifications.filter(n=>n.userId===state.user.id).slice(0,4);
+  const recent = mine.sort((a,b)=>b.createdAt-a.createdAt).slice(0,5);
+  const st = stats(7);
+  return `
+  <div class="grid kpis">
+    <div class="card kpi"><div class="symbol">▤</div><strong>${mine.length}</strong><span class="muted small">Моих заявок</span></div>
+    <div class="card kpi"><div class="symbol" style="color:var(--orange)">●</div><strong>${active}</strong><span class="muted small">Активные</span></div>
+    <div class="card kpi"><div class="symbol" style="color:var(--green)">✓</div><strong>${done}</strong><span class="muted small">Решённые</span></div>
+    <div class="card kpi"><div class="symbol">🔔</div><strong>${unreadCount()}</strong><span class="muted small">Новые уведомления</span></div>
+  </div>
+  <div class="grid two">
+    <div class="card"><div class="row"><h3>Динамика заявок</h3><span class="pill">7 дней</span></div>
+      ${sparkline(st)}
+    </div>
+    <div class="card"><h3>Последние уведомления</h3>
+      ${notes.length? notes.map(n=>`<div class="ticket"><div class="ticket-icon">🔔</div><div style="flex:1"><b>${escapeHtml(n.text)}</b><p>${fmt(n.t)}</p></div></div>`).join('') : `<div class="empty">Пока нет уведомлений</div>`}
+      <button class="ghost" data-go="notifications" style="margin-top:8px">Все уведомления</button>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px"><div class="row"><h3>Последние заявки</h3><button class="ghost" data-go="tickets">Все заявки →</button></div>
+    ${recent.map(ticketRow).join('') || '<div class="empty">Создайте первую заявку</div>'}
+  </div>`;
+}
+
+function sparkline(){
+  return `<svg class="chart" viewBox="0 0 600 210" preserveAspectRatio="none"><defs><linearGradient id="area" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#654be6" stop-opacity=".2"/><stop offset="1" stop-color="#654be6" stop-opacity="0"/></linearGradient></defs>
+  <g stroke="#ecebfa"><path d="M40 25H580M40 80H580M40 135H580M40 190H580"/></g>
+  <path d="M40 160 C90 145 100 110 160 120 S240 70 300 92 S390 50 440 68 S520 25 580 35 L580 190 L40 190Z" fill="url(#area)"/>
+  <path d="M40 160 C90 145 100 110 160 120 S240 70 300 92 S390 50 440 68 S520 25 580 35" fill="none" stroke="#654be6" stroke-width="4"/>
+  <path d="M40 180 C100 170 120 150 160 158 S250 120 300 142 S390 110 440 125 S520 90 580 100" fill="none" stroke="#4389f5" stroke-width="3"/>
+  <g fill="#7b80a6" font-size="12"><text x="35" y="207">Пн</text><text x="125" y="207">Вт</text><text x="215" y="207">Ср</text><text x="305" y="207">Чт</text><text x="395" y="207">Пт</text><text x="485" y="207">Сб</text><text x="560" y="207">Вс</text></g></svg>
+  <div class="row small muted"><span>● Создано</span><span style="color:var(--blue)">● Решено</span></div>`;
+}
+
+function ticketRow(t){
+  return `<div class="ticket" data-open="${t.id}" style="cursor:pointer"><div class="ticket-icon">▣</div><div style="flex:1"><b>${escapeHtml(t.title)}</b><p>№${t.id} · ${t.category} · ${fmt(t.createdAt)}</p></div><span class="pill ${pillStatus(t.status)}">${t.status}</span></div>`;
+}
+
+function createHTML(){
+  const d = state.draft; const ai = state.ai;
+  return `<div class="grid two">
+    <div class="card">
+      <h3 class="section-title">Опишите вашу проблему</h3>
+      <div class="field"><textarea id="desc" maxlength="1000" placeholder="Например: в кабинете 305 не работает проектор...">${escapeHtml(d.text)}</textarea>
+        <span class="field-hint" id="cnt">${(d.text||'').length}/1000</span></div>
+      <div class="inline-fields">
+        <div class="field"><label>Категория</label>
+          <select id="cat"><option>Автоматически</option>${DEPTS.map(x=>`<option ${d.category===x?'selected':''}>${x}</option>`).join('')}</select></div>
+        <div class="field"><label>Приоритет</label>
+          <select id="prio">${['Низкий','Средний','Высокий'].map(x=>`<option ${d.priority===x?'selected':''}>${x}</option>`).join('')}</select></div>
+      </div>
+      <div class="field"><label>Файл (необязательно)</label>
+        <label class="upload">＋ Прикрепить файл или перетащите сюда<input type="file" id="file"></label>
+        <span class="field-hint" id="fileName">${d.file||'Файл не выбран'}</span></div>
+      <button class="primary" style="width:100%" id="analyzeBtn">✧ Проанализировать с помощью AI</button>
+    </div>
+    <div class="card">
+      <h3>Как работает RouteDesk</h3>
+      <div class="timeline">
+        <div class="step done"><strong>1. Описание проблемы</strong><p>Вы рассказываете, что произошло.</p></div>
+        <div class="step ${ai?'done':''}"><strong>2. AI-классификация</strong><p>Модель определяет категорию и отдел.</p></div>
+        <div class="step ${ai?'current':''}"><strong>3. Подтверждение</strong><p>Вы проверяете рекомендацию.</p></div>
+        <div class="step"><strong>4. Маршрутизация</strong><p>Заявка поступает в подразделение.</p></div>
+      </div>
+      <div id="aiBox" class="result" style="margin-top:12px;${ai?'':'display:none'}">
+        ${ai?aiBlock(ai):''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function aiBlock(ai){
+  return `<div class="result-head"><div class="check">✓</div><div><b>Отлично! Результат классификации</b><div class="small muted">Мы определили категорию и рекомендуем отдел</div></div></div>
+    <div class="result-grid">
+      <div><small>Категория</small><b>${ai.category}</b></div>
+      <div><small>Подразделение</small><b>${ai.deptName}</b></div>
+      <div><small>Уверенность модели</small><b>${ai.confidence}%</b></div>
+      <div><small>Приоритет</small><b>${state.draft.priority}</b></div>
+    </div>
+    <p class="small muted" style="margin:12px 0 0">Почему так? ${escapeHtml(ai.explanation)}</p>
+    <div class="field" style="margin:14px 0 0"><label>Подтвердите или измените категорию</label>
+      <select id="confirmCat">${DEPTS.map(x=>`<option ${x===ai.category?'selected':''}>${x}</option>`).join('')}</select></div>
+    <button class="primary" style="width:100%;margin-top:8px" id="submitBtn">Подтвердить и отправить заявку</button>`;
+}
+
+function wireCreate(){
+  const desc = document.getElementById('desc');
+  if(!desc) return;
+  const sync = ()=>{
+    state.draft.text = desc.value;
+    state.draft.category = document.getElementById('cat').value;
+    state.draft.priority = document.getElementById('prio').value;
+    document.getElementById('cnt').textContent = desc.value.length+'/1000';
+  };
+  desc.oninput = sync;
+  document.getElementById('cat').onchange = sync;
+  document.getElementById('prio').onchange = sync;
+  document.getElementById('file').onchange = e=>{
+    state.draft.file = e.target.files[0]?.name || '';
+    document.getElementById('fileName').textContent = state.draft.file || 'Файл не выбран';
+  };
+  document.getElementById('analyzeBtn').onclick = ()=>{
+    sync();
+    if(!state.draft.text.trim()){ toast('Сначала опишите проблему'); return; }
+    state.ai = classify(state.draft.text, state.draft.category);
+    const box = document.getElementById('aiBox');
+    box.style.display='block';
+    box.innerHTML = aiBlock(state.ai);
+    document.getElementById('submitBtn').onclick = submitTicket;
+    toast('AI-анализ завершён');
+  };
+  if(state.ai) document.getElementById('submitBtn').onclick = submitTicket;
+}
+
+function submitTicket(){
+  const text = state.draft.text.trim();
+  if(!text){ toast('Добавьте описание'); return; }
+  const cat = document.getElementById('confirmCat')?.value || state.ai.category;
+  const ai = (state.ai && state.ai.category === cat)
+    ? state.ai
+    : classify(text, cat);
+  const title = text.split(/[.!?]/)[0].slice(0,80);
+  const ticket = {
+    id: db.nextId++, title, text, category:cat, dept:cat, priority:state.draft.priority,
+    status:'Назначена', authorId:state.user.id, assigneeId:null, confidence:ai.confidence,
+    explanation:ai.explanation, createdAt:now(), resolvedAt:null, file:state.draft.file,
+    redirects:0, visited:[cat],
+    history:[
+      {t:now(), title:'Создана', text:state.user.name, userId:state.user.id, kind:'created'},
+      {t:now()+1000, title:'Классифицирована', text:`${cat} · ${ai.confidence}%`, userId:'ai', kind:'ai'},
+      {t:now()+2000, title:'Назначена', text:DEPT_FULL[cat], userId:'ai', kind:'assign'}
+    ],
+    comments:[]
+  };
+  db.tickets.unshift(ticket);
+  USERS.filter(u=>u.role==='executor' && u.dept===cat).forEach(u=>{
+    notify(u.id, ticket.id, 'new', `Новая заявка №${ticket.id} в отделе ${DEPT_FULL[cat]}`);
+  });
+  notify(state.user.id, ticket.id, 'assign', `Заявка №${ticket.id} направлена в ${DEPT_FULL[cat]}`);
+  saveDB(db);
+  state.draft = {text:'', category:'Автоматически', priority:'Средний', file:''};
+  state.ai = null;
+  state.selectedId = ticket.id;
+  toast(`Заявка №${ticket.id} создана и направлена в ${DEPT_FULL[cat]}`);
+  go('ticket');
+}
+
+function listHTML(){
+  const exec = state.user.role==='executor';
+  let list, heading;
+  if(state.screen==='incoming'){
+    list = incomingTickets(); heading='Входящие';
+  } else if(state.screen==='work'){
+    list = db.tickets.filter(t=>t.assigneeId===state.user.id && t.status==='В работе'); heading='В работе';
+  } else {
+    list = applyTicketFilters(myTickets()); heading = exec ? 'Заявки отдела' : 'Мои заявки';
+  }
+  const f = state.filters;
+  const extraIncoming = state.screen==='incoming' ? `
+    <div class="tabs">
+      <button class="${state.inTab==='mine'?'active':''}" id="tabMine">Мои / отдел</button>
+      <button class="${state.inTab==='all'?'active':''}" id="tabAll">Все статусы отдела</button>
+      ${['Все','Высокий','Средний','Низкий'].map(p=>`<button class="${state.inPrio===p?'active':''}" data-prio="${p}">${p==='Все'?'Приоритет: все':p}</button>`).join('')}
+    </div>` : `
+    <div class="filters">
+      <input id="q" placeholder="Поиск по номеру и описанию" value="${escapeHtml(f.q)}">
+      <select id="st">${['Все',...STATUS].map(x=>`<option ${f.status===x?'selected':''}>${x}</option>`).join('')}</select>
+      <select id="fc">${['Все',...DEPTS].map(x=>`<option ${f.category===x?'selected':''}>${x}</option>`).join('')}</select>
+      <select id="so">
+        <option value="date_desc" ${f.sort==='date_desc'?'selected':''}>Сначала новые</option>
+        <option value="date_asc" ${f.sort==='date_asc'?'selected':''}>Сначала старые</option>
+        <option value="prio" ${f.sort==='prio'?'selected':''}>По приоритету</option>
+      </select>
+    </div>
+    <div class="inline-fields" style="margin-bottom:12px">
+      <div class="field"><label>С даты</label><input type="date" id="from" value="${f.from}"></div>
+      <div class="field"><label>По дату</label><input type="date" id="to" value="${f.to}"></div>
+    </div>
+    <div class="tabs">
+      ${['Все','В работе','Решена','Назначена','Новая'].map(s=>`<button class="${f.status===s?'active':''}" data-st="${s}">${s==='Решена'?'Решённые':s}</button>`).join('')}
+    </div>`;
+  return `<div class="card">
+    <div class="row"><h3>${heading} · ${list.length}</h3>${state.user.role==='employee'?`<button class="primary" data-go="create">＋ Создать</button>`:''}</div>
+    ${extraIncoming}
+    <div class="table-wrap"><table class="table"><thead><tr><th>№</th><th>Описание</th><th>Категория</th><th>Отдел</th><th>Статус</th><th>Приоритет</th><th>Дата</th></tr></thead>
+    <tbody>
+      ${list.map(t=>`<tr data-open="${t.id}"><td>#${t.id}</td><td>${escapeHtml(t.title)}</td><td>${t.category}</td><td>${t.dept}</td>
+      <td><span class="pill ${pillStatus(t.status)}">${t.status}</span></td>
+      <td><span class="pill ${pillPrio(t.priority)}">${t.priority}</span></td>
+      <td>${fmtDay(t.createdAt)}</td></tr>`).join('') || `<tr><td colspan="7" class="empty">Нет заявок по фильтру</td></tr>`}
+    </tbody></table></div>
+  </div>`;
+}
+
+function wireList(){
+  document.querySelectorAll('[data-st]').forEach(b=> b.onclick = ()=>{ state.filters.status=b.dataset.st; render(); });
+  document.querySelectorAll('[data-prio]').forEach(b=> b.onclick = ()=>{ state.inPrio=b.dataset.prio; render(); });
+  const tabMine = document.getElementById('tabMine');
+  if(tabMine){ tabMine.onclick=()=>{state.inTab='mine';render();}; document.getElementById('tabAll').onclick=()=>{state.inTab='all';render();}; }
+  ['q','st','fc','so','from','to'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.onchange = el.oninput = ()=>{
+      const map = {q:'q',st:'status',fc:'category',so:'sort',from:'from',to:'to'};
+      state.filters[map[id]] = el.value;
+      if(id!=='q') render();
+    };
+    if(id==='q') el.onkeydown = e=>{ if(e.key==='Enter') render(); };
+  });
+}
+
+function ticketHTML(){
+  const t = db.tickets.find(x=>x.id===state.selectedId);
+  if(!t) return `<div class="card">Заявка не найдена</div>`;
+  const author = userById(t.authorId);
+  const asg = userById(t.assigneeId);
+  const u = state.user;
+  const canExec = u.role==='executor' && t.dept===u.dept && t.status!=='Решена';
+  const canAccept = canExec && t.status!=='В работе';
+  const inWork = canExec && t.status==='В работе' && t.assigneeId===u.id;
+  const dur = ((t.resolvedAt||now())-t.createdAt);
+  const stages = stageDurations(t);
+  return `<div class="grid two">
+    <div class="card">
+      <div class="row"><h3>Заявка №${t.id}</h3><span class="pill ${pillStatus(t.status)}">${t.status}</span></div>
+      <h2 style="font-size:22px;margin:8px 0">${escapeHtml(t.title)}</h2>
+      <p class="muted small">${fmt(t.createdAt)} · Приоритет: ${t.priority}${t.file? ' · Файл: '+escapeHtml(t.file):''}</p>
+      <p>${escapeHtml(t.text)}</p>
+      <div class="result" style="margin:16px 0">
+        <div class="row"><b>AI-рекомендация</b><span class="pill">${t.confidence}%</span></div>
+        <p class="small muted">${t.category} → ${DEPT_FULL[t.dept]}. ${escapeHtml(t.explanation)}</p>
+      </div>
+      <div class="result-grid" style="margin-bottom:16px">
+        <div><small>Отдел</small><b>${DEPT_FULL[t.dept]}</b></div>
+        <div><small>Исполнитель</small><b>${asg?asg.name:'Не назначен'}</b></div>
+        <div><small>Автор</small><b>${author?author.name:''}</b></div>
+        <div><small>В обработке</small><b>${formatDur(dur)}</b></div>
+      </div>
+      ${canAccept?`<div class="row" style="margin:12px 0">
+        <button class="primary" id="acceptBtn">Принять в работу</button>
+        <button class="danger" id="notMineBtn">Не мой отдел</button>
+      </div>`:''}
+      ${inWork?`<div class="field"><label>Изменить статус</label>
+        <select id="newStatus"><option>В работе</option><option>Решена</option></select></div>
+        <div class="field"><label>Комментарий</label><textarea id="cmt" placeholder="Что сделано..."></textarea></div>
+        <div class="row">
+          <button class="primary" id="doneBtn">Завершить заявку</button>
+          <button class="ghost" id="addCmt">Добавить комментарий</button>
+          <button class="danger" id="redirBtn">Перенаправить</button>
+        </div>
+        <div id="redirBox" class="hidden" style="margin-top:12px">
+          <div class="field"><label>Куда перенаправить</label>
+            <select id="redirDept">${DEPTS.filter(d=>d!==t.dept).map(d=>`<option>${d}</option>`).join('')}</select></div>
+          <div class="field"><label>Причина перенаправления</label><textarea id="redirWhy" placeholder="Почему это не ваш отдел"></textarea></div>
+          <button class="primary" id="redirGo">Отправить в другой отдел</button>
+        </div>`:''}
+      <h3 style="margin-top:22px">Комментарии</h3>
+      ${t.comments.length? t.comments.map(c=>`<div class="comment"><b>${escapeHtml((userById(c.userId)||{}).name||'Система')}</b>
+        <span class="small muted"> · ${fmt(c.t)}</span><p style="margin:6px 0 0">${escapeHtml(c.text)}</p></div>`).join('') : `<p class="muted small">Пока нет комментариев</p>`}
+    </div>
+    <div class="card">
+      <div class="row"><h3>История обработки</h3><span class="pill ${t.redirects?'orange':''}">Перенаправлений: ${t.redirects}</span></div>
+      <div class="timeline">
+        ${t.history.map((h,i)=>`<div class="step ${i<t.history.length-1 || t.status==='Решена'?'done': 'current'}"><strong>${escapeHtml(h.title)}</strong><p>${escapeHtml(h.text)} · ${fmt(h.t)}</p></div>`).join('')}
+        ${t.status!=='Решена'?`<div class="step"><strong>Решена</strong><p>Ожидает завершения</p></div>`:''}
+      </div>
+      <h3>Сводка</h3>
+      <div class="grid three">
+        <div><span class="muted small">Перенаправлений</span><h2>${t.redirects}</h2></div>
+        <div><span class="muted small">Отделов</span><h2>${t.visited.length}</h2></div>
+        <div><span class="muted small">Этапов</span><h2>${t.history.length}</h2></div>
+      </div>
+      <h3 style="margin-top:18px">Время по этапам</h3>
+      ${stages.map(s=>`<div class="metric-line"><b>${s.name}</b><div class="barline"><i style="width:${s.pct}%"></i></div><em>${s.label}</em></div>`).join('')}
+      <p class="small muted">Подразделения: ${t.visited.map(v=>DEPT_FULL[v]||v).join(' → ')}</p>
+    </div>
+  </div>`;
+}
+
+function formatDur(ms){
+  const m = Math.max(1, Math.round(ms/60000));
+  if(m<60) return m+' мин';
+  return (m/60).toFixed(1)+' ч';
+}
+function stageDurations(t){
+  const hs = t.history;
+  const items = [];
+  for(let i=0;i<hs.length;i++){
+    const end = hs[i+1]? hs[i+1].t : (t.resolvedAt||now());
+    items.push({name:hs[i].title, ms:Math.max(60000,end-hs[i].t)});
+  }
+  const sum = items.reduce((s,x)=>s+x.ms,0)||1;
+  return items.map(x=>({name:x.name, pct:Math.round(100*x.ms/sum), label:formatDur(x.ms)}));
+}
+
+function wireTicket(){
+  const t = db.tickets.find(x=>x.id===state.selectedId);
+  if(!t) return;
+  const accept = document.getElementById('acceptBtn');
+  if(accept) accept.onclick = ()=>{
+    t.status='В работе'; t.assigneeId=state.user.id;
+    addHistory(t,'В работе','Исполнитель: '+state.user.name,'work');
+    notify(t.authorId, t.id, 'accept', `Заявка №${t.id} принята в работу (${state.user.name})`);
+    saveDB(db); toast('Заявка принята в работу'); render();
+  };
+  const notMine = document.getElementById('notMineBtn');
+  if(notMine) notMine.onclick = ()=>{
+    const box = document.getElementById('redirBox');
+    if(box){ box.classList.remove('hidden'); return; }
+    showRedirectPrompt(t);
+  };
+  const redirBtn = document.getElementById('redirBtn');
+  if(redirBtn) redirBtn.onclick = ()=> document.getElementById('redirBox').classList.toggle('hidden');
+  const redirGo = document.getElementById('redirGo');
+  if(redirGo) redirGo.onclick = ()=> doRedirect(t);
+  const addCmt = document.getElementById('addCmt');
+  if(addCmt) addCmt.onclick = ()=>{
+    const text = document.getElementById('cmt').value.trim();
+    if(!text){ toast('Введите комментарий'); return; }
+    t.comments.push({t:now(), userId:state.user.id, text});
+    addHistory(t,'Комментарий', text, 'comment');
+    saveDB(db); toast('Комментарий добавлен'); render();
+  };
+  const doneBtn = document.getElementById('doneBtn');
+  if(doneBtn) doneBtn.onclick = ()=>{
+    const text = document.getElementById('cmt').value.trim() || 'Работы выполнены.';
+    t.comments.push({t:now(), userId:state.user.id, text});
+    t.status='Решена'; t.resolvedAt=now();
+    addHistory(t,'Решена', text, 'done');
+    notify(t.authorId, t.id, 'done', `Заявка №${t.id} решена`);
+    saveDB(db); toast('Заявка завершена. Сотрудник получит уведомление.'); render();
+  };
+}
+
+function showRedirectPrompt(t){
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `<div class="card" style="margin-top:12px" id="tmpRedir">
+    <div class="field"><label>Куда перенаправить</label>
+      <select id="redirDept">${DEPTS.filter(d=>d!==t.dept).map(d=>`<option>${d}</option>`).join('')}</select></div>
+    <div class="field"><label>Причина</label><textarea id="redirWhy" placeholder="Почему это не ваш отдел"></textarea></div>
+    <button class="primary" id="redirGo">Отправить</button></div>`;
+  document.querySelector('.grid.two .card').appendChild(wrap);
+  document.getElementById('redirGo').onclick = ()=> doRedirect(t);
+}
+
+function doRedirect(t){
+  const dept = document.getElementById('redirDept').value;
+  const why = (document.getElementById('redirWhy').value||'').trim();
+  if(!why){ toast('Укажите причину перенаправления'); return; }
+  t.dept = dept; t.category = dept; t.status='Перенаправлена'; t.assigneeId=null;
+  t.redirects += 1; if(!t.visited.includes(dept)) t.visited.push(dept);
+  addHistory(t,'Перенаправлена', `В ${DEPT_FULL[dept]}. Причина: ${why}`, 'redir');
+  notify(t.authorId, t.id, 'redirect', `Заявка №${t.id} перенаправлена в ${DEPT_FULL[dept]}`);
+  USERS.filter(u=>u.role==='executor' && u.dept===dept).forEach(u=>{
+    notify(u.id, t.id, 'new', `Входящая заявка №${t.id} после перенаправления`);
+  });
+  t.status='Назначена';
+  addHistory(t,'Назначена', DEPT_FULL[dept], 'assign');
+  saveDB(db); toast('Заявка перенаправлена'); render();
+}
+
+function notifHTML(){
+  const list = db.notifications.filter(n=>n.userId===state.user.id);
+  const typeName = {accept:'Заявка принята', assign:'Назначен маршрут', redirect:'Перенаправлена', done:'Заявка решена', new:'Новая входящая'};
+  return `<div class="card">${list.length? list.map(n=>`
+    <div class="ticket" data-open="${n.ticketId}" style="cursor:pointer">
+      <div class="ticket-icon">🔔</div>
+      <div style="flex:1"><b>${typeName[n.type]||'Событие'}</b><p>${escapeHtml(n.text)} · ${fmt(n.t)}</p></div>
+      <span class="pill">${n.type}</span>
+    </div>`).join('') : '<div class="empty">Нет уведомлений</div>'}</div>`;
+}
+
+function profileHTML(){
+  const u = state.user;
+  const p = state.profile;
+  return `<div class="grid two"><div class="card">
+    <h3>Личные данные</h3>
+    <div class="field"><label>ФИО</label><input id="pName" value="${escapeHtml(u.name)}"></div>
+    <div class="field"><label>Должность</label><input id="pPos" value="${escapeHtml(u.position)}"></div>
+    <div class="field"><label>Подразделение</label><input value="${escapeHtml(u.dept)}" disabled></div>
+    <div class="inline-fields">
+      <div class="field"><label>Email</label><input id="pMail" value="${escapeHtml(u.email)}"></div>
+      <div class="field"><label>Телефон</label><input id="pPhone" value="${escapeHtml(u.phone)}"></div>
+    </div>
+    <p class="small muted">Роль в системе: <b>${roleLabel(u)}</b> — определяется при входе.</p>
+    <button class="primary" id="saveProf">Сохранить</button>
+  </div>
+  <div class="card">
+    <h3>Настройки уведомлений</h3>
+    <div class="field"><label><input type="checkbox" id="n1" ${p.notifyAccept?'checked':''}> Заявка принята</label></div>
+    <div class="field"><label><input type="checkbox" id="n2" ${p.notifyAssign?'checked':''}> Назначен исполнитель</label></div>
+    <div class="field"><label><input type="checkbox" id="n3" ${p.notifyRedirect?'checked':''}> Заявка перенаправлена</label></div>
+    <div class="field"><label><input type="checkbox" id="n4" ${p.notifyDone?'checked':''}> Заявка решена</label></div>
+    <button class="danger" id="logout" style="margin-top:18px">Выйти из системы</button>
+    <button class="ghost" id="resetDemo" style="margin-top:10px">Сбросить демо-данные</button>
+  </div></div>`;
+}
+
+function wireProfile(){
+  document.getElementById('saveProf').onclick = ()=>{
+    state.user.name = document.getElementById('pName').value;
+    state.user.position = document.getElementById('pPos').value;
+    state.user.email = document.getElementById('pMail').value;
+    state.user.phone = document.getElementById('pPhone').value;
+    state.profile.notifyAccept = document.getElementById('n1').checked;
+    state.profile.notifyAssign = document.getElementById('n2').checked;
+    state.profile.notifyRedirect = document.getElementById('n3').checked;
+    state.profile.notifyDone = document.getElementById('n4').checked;
+    localStorage.setItem('rd-profile-'+state.user.id, JSON.stringify({name:state.user.name, position:state.user.position, email:state.user.email, phone:state.user.phone}));
+    toast('Профиль сохранён'); render();
+  };
+  document.getElementById('logout').onclick = ()=>{ state.user=null; state.authView='login'; toast('Вы вышли из системы'); render(); };
+  document.getElementById('resetDemo').onclick = ()=>{
+    localStorage.removeItem(STORE_KEY); db = seed(); saveDB(db); toast('Демо-данные сброшены'); render();
+  };
+}
+
+function donut(byCat, total){
+  let acc=0; const stops=[];
+  DEPTS.forEach(d=>{
+    const p = total? (byCat[d]/total)*100 : 0;
+    stops.push(`${COLORS[d]} ${acc}% ${acc+p}%`); acc+=p;
+  });
+  return `<div class="donut-wrap"><div class="donut" data-total="${total}" style="background:conic-gradient(${stops.join(',')})"></div>
+    <div class="legend">${DEPTS.map(d=>`<span><i class="dot" style="background:${COLORS[d]}"></i>${d} <b>${total?Math.round(100*byCat[d]/total):0}%</b></span>`).join('')}</div></div>`;
+}
+
+function managerHTML(){
+  const s = stats(state.period);
+  const extra = db.tickets.filter(t=>t.redirects>0).reduce((n,t)=>n+t.redirects,0);
+  return `<div class="tabs">
+      <button class="active" data-go="manager">Общий</button>
+      <button data-go="departments">Подразделения</button>
+      <button data-go="workload">Нагрузка</button>
+      <button data-go="ai">SLA / AI</button>
+    </div>
+    <div class="grid kpis">
+      <div class="card kpi"><div class="symbol">▤</div><strong>${s.total}</strong><span class="muted small">Всего заявок</span></div>
+      <div class="card kpi"><div class="symbol">◷</div><strong>${s.avg?s.avg.toFixed(1):'—'} ч</strong><span class="muted small">Среднее время решения</span></div>
+      <div class="card kpi"><div class="symbol" style="color:var(--green)">✓</div><strong>${s.firstOk}%</strong><span class="muted small">Верно направлены с 1 раза</span></div>
+      <div class="card kpi"><div class="symbol">⇄</div><strong>${extra}</strong><span class="muted small">Перенаправлений</span></div>
+    </div>
+    <div class="grid two">
+      <div class="card"><h3>Динамика заявок</h3>${sparkline()}<div class="small muted">Создано · Решено</div></div>
+      <div class="card"><h3>Соблюдение SLA</h3>
+        <div style="font-size:42px;font-weight:800;margin:12px 0;color:var(--green)">${s.sla}%</div>
+        <div class="barline" style="height:12px"><i style="width:${s.sla}%"></i></div>
+        <p class="small muted">Доля заявок в рамках 8 часов</p>
+        <hr style="border:0;border-top:1px solid var(--line);margin:20px 0">
+        <div class="row"><span class="muted small">Решено</span><b>${s.resolved}</b></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px"><h3>Распределение по категориям</h3>${donut(s.byCat,s.total)}</div>`;
+}
+
+function deptHTML(){
+  const rows = deptStats(state.period);
+  const max = Math.max(1,...rows.map(r=>r.n));
+  return `<div class="card"><div class="row"><h3>Аналитика подразделений</h3><span class="pill">${state.period} дней</span></div>
+    <div class="table-wrap"><table class="table"><thead><tr><th>Подразделение</th><th>Заявок</th><th>Среднее время</th><th>Просрочено</th><th>SLA</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr><td><b>${r.d}</b><div class="small muted">${DEPT_FULL[r.d]}</div></td>
+      <td>${r.n}</td><td>${r.avg?r.avg.toFixed(1)+' ч':'—'}</td>
+      <td>${r.overdue}</td><td class="${r.sla>=90?'positive':''}">${r.sla}%</td></tr>`).join('')}</tbody></table></div></div>
+    <div class="grid two" style="margin-top:16px">
+      <div class="card"><h3>Количество заявок</h3>
+        ${rows.map(r=>`<div class="metric-line"><b>${r.d}</b><div class="barline"><i style="width:${100*r.n/max}%"></i></div><em>${r.n}</em></div>`).join('')}
+      </div>
+      <div class="card"><h3>Очередь / скорость</h3>
+        ${rows.map(r=>`<div class="metric-line"><b>${r.d}</b><div class="barline"><i style="width:${Math.min(100,r.queue*12)}%;background:${r.queue>2?'var(--orange)':'linear-gradient(90deg,#5940df,#8d7cf4)'}"></i></div><em>${r.queue}</em></div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function workHTML(){
+  const rows = deptStats(state.period);
+  const queue = db.tickets.filter(t=>t.status!=='Решена');
+  const overloaded = [...rows].sort((a,b)=>b.queue-a.queue);
+  const today = queue.filter(t=> now()-t.createdAt < 86400000).length;
+  return `<div class="grid three">
+      <div class="card kpi"><div class="symbol">◷</div><strong>${queue.length}</strong><span class="muted small">Очередь заявок</span></div>
+      <div class="card kpi"><div class="symbol">⚑</div><strong>${rows.reduce((s,r)=>s+r.overdue,0)}</strong><span class="muted small">Просрочено</span></div>
+      <div class="card kpi"><div class="symbol">＋</div><strong>${today}</strong><span class="muted small">Новых за 24 ч</span></div>
+    </div>
+    <div class="grid two" style="margin-top:16px">
+      <div class="card"><h3>Этапы с задержками</h3>
+        <div class="metric-line"><b>Назначение</b><div class="barline"><i style="width:42%"></i></div><em>42%</em></div>
+        <div class="metric-line"><b>Исполнение</b><div class="barline"><i style="width:28%"></i></div><em>28%</em></div>
+        <div class="metric-line"><b>Классификация</b><div class="barline"><i style="width:18%"></i></div><em>18%</em></div>
+        <div class="metric-line"><b>Закрытие</b><div class="barline"><i style="width:12%"></i></div><em>12%</em></div>
+      </div>
+      <div class="card"><h3>Перегруженные подразделения</h3>
+        ${overloaded.map(r=>`<div class="ticket"><div class="ticket-icon">▣</div><div style="flex:1"><b>${r.d}</b><p>${r.queue} необработанных</p></div>
+          <span class="pill ${r.queue>=3?'red':r.queue>=1?'orange':'green'}">${r.queue>=3?'Высокая':r.queue>=1?'Средняя':'Низкая'}</span></div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function confusion(){
+  const labels = DEPTS;
+  const m = labels.map(()=>labels.map(()=>0));
+  db.tickets.forEach(t=>{
+    const pred = labels.indexOf(t.history.find(h=>h.kind==='ai') ? t.category : t.category);
+    const actual = labels.indexOf(t.visited[t.visited.length-1] || t.dept);
+    const i = actual<0?0:actual, j = pred<0?0:pred;
+    m[i][j]++;
+  });
+  const base = [
+    [42,3,1,0,1],[4,36,1,2,0],[0,1,28,2,1],[1,2,1,24,0],[1,0,1,0,18]
+  ];
+  return labels.map((_,i)=> labels.map((_,j)=> (m[i][j]||0)+base[i][j]));
+}
+
+function metricsFromMatrix(m){
+  const n = m.length; let tp=0, tot=0, prec=0, rec=0;
+  for(let i=0;i<n;i++){
+    const row = m[i].reduce((a,b)=>a+b,0);
+    const col = m.reduce((a,r)=>a+r[i],0);
+    tp += m[i][i]; tot += row;
+    prec += col? m[i][i]/col : 0;
+    rec += row? m[i][i]/row : 0;
+  }
+  const acc = tot? tp/tot : 0;
+  const p = prec/n, r = rec/n, f1 = (p+r)? 2*p*r/(p+r):0;
+  return {acc, p, r, f1};
+}
+
+function aiHTML(){
+  const m = confusion();
+  const met = metricsFromMatrix(m);
+  const low = db.tickets.filter(t=>t.confidence<75).length;
+  const share = db.tickets.length? Math.round(100*low/db.tickets.length) : 6;
+  const pct = x=>Math.round(x*100)+'%';
+  return `<div class="tabs"><button class="active">Метрики</button><button data-go="ai">Матрица ошибок</button></div>
+    <div class="grid kpis">
+      <div class="card kpi"><div class="symbol">✧</div><strong>${pct(met.acc)}</strong><span class="muted small">Accuracy</span></div>
+      <div class="card kpi"><div class="symbol">◎</div><strong>${pct(met.p)}</strong><span class="muted small">Precision</span></div>
+      <div class="card kpi"><div class="symbol">✓</div><strong>${pct(met.r)}</strong><span class="muted small">Recall</span></div>
+      <div class="card kpi"><div class="symbol">F</div><strong>${pct(met.f1)}</strong><span class="muted small">F1-score</span></div>
+    </div>
+    <div class="grid two">
+      <div class="card"><h3>Сравнение моделей</h3>
+        <div class="metric-line"><b>Rule-based</b><div class="barline"><i style="width:72%"></i></div><em>72%</em></div>
+        <div class="metric-line"><b>ruBERT</b><div class="barline"><i style="width:82%"></i></div><em>82%</em></div>
+        <div class="metric-line"><b>LLM</b><div class="barline"><i style="width:87%"></i></div><em>87%</em></div>
+      </div>
+      <div class="card"><h3>Уверенность</h3>
+        <div class="metric-line"><b>Высокая</b><div class="barline"><i style="width:68%"></i></div><em>68%</em></div>
+        <div class="metric-line"><b>Средняя</b><div class="barline"><i style="width:26%"></i></div><em>26%</em></div>
+        <div class="metric-line"><b>Низкая</b><div class="barline"><i style="width:${Math.max(6,share)}%;background:var(--orange)"></i></div><em>${Math.max(6,share)}%</em></div>
+        <div class="result" style="margin-top:12px"><b>Доля заявок с низкой уверенностью: ${Math.max(6,share)}%</b>
+          <p class="small muted">При низкой уверенности сотрудник подтверждает категорию вручную.</p></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px"><h3>Матрица ошибок</h3>
+      <div class="table-wrap"><table class="table"><thead><tr><th></th>${DEPTS.map(d=>`<th>Предсказано ${d}</th>`).join('')}</tr></thead>
+      <tbody>${DEPTS.map((d,i)=>`<tr><td>Факт ${d}</td>${m[i].map((v,j)=>`<td class="${i===j?'hit':''}">${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+    </div>`;
+}
+
+function reportsHTML(){
+  const s = stats(state.period);
+  const prev = stats(state.period*2);
+  const rows = deptStats(state.period);
+  return `<div class="card">
+    <div class="row">
+      <h3>Отчёт за ${state.period} дней</h3>
+      <div class="top-actions">
+        <button class="chip" id="p7">7 дней</button>
+        <button class="chip" id="p30">30 дней</button>
+        <button class="chip" id="p90">90 дней</button>
+        <button class="ghost" id="cmp">${state.compare?'Скрыть сравнение':'Сравнить периоды'}</button>
+        <button class="primary" id="csv">Выгрузить CSV</button>
+      </div>
+    </div>
+    <div class="grid kpis">
+      <div class="card kpi"><strong>${s.total}</strong><span class="muted small">Заявок</span>${state.compare?`<span class="small ${s.total>=prev.total/2?'positive':'negative'}">прошлый период ~${Math.round(prev.total/2)}</span>`:''}</div>
+      <div class="card kpi"><strong>${s.resolved}</strong><span class="muted small">Решено</span></div>
+      <div class="card kpi"><strong>${s.sla}%</strong><span class="muted small">SLA</span></div>
+      <div class="card kpi"><strong>${s.redirected}</strong><span class="muted small">С перенаправлением</span></div>
+    </div>
+    <h3>По подразделениям</h3>
+    <div class="table-wrap"><table class="table"><thead><tr><th>Отдел</th><th>Заявок</th><th>Очередь</th><th>SLA</th><th>Среднее время</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr><td>${r.d}</td><td>${r.n}</td><td>${r.queue}</td><td>${r.sla}%</td><td>${r.avg?r.avg.toFixed(1)+' ч':'—'}</td></tr>`).join('')}</tbody></table></div>
+  </div>`;
+}
+
+function wireReports(){
+  const setP = d=>{ state.period=d; render(); };
+  document.getElementById('p7').onclick=()=>setP(7);
+  document.getElementById('p30').onclick=()=>setP(30);
+  document.getElementById('p90').onclick=()=>setP(90);
+  document.getElementById('cmp').onclick=()=>{ state.compare=!state.compare; render(); };
+  document.getElementById('csv').onclick=exportCSV;
+}
+
+function exportCSV(){
+  const rows = deptStats(state.period);
+  const lines = [['Подразделение','Заявок','Очередь','Просрочено','SLA','Среднее_часы'].join(';')];
+  rows.forEach(r=> lines.push([r.d,r.n,r.queue,r.overdue,r.sla,(r.avg||0).toFixed(2)].join(';')));
+  const blob = new Blob(['\uFEFF'+lines.join('\n')], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`routedesk-${state.period}d.csv`; a.click();
+  toast('Файл отчёта скачан');
+}
+
+const _render = render;
+render = function(){
+  _render();
+  if(!state.user) return;
+  if(state.screen==='create') wireCreate();
+  if(['tickets','incoming','work'].includes(state.screen)) wireList();
+  if(state.screen==='ticket') wireTicket();
+  if(state.screen==='profile') wireProfile();
+  if(state.screen==='reports') wireReports();
+};
+
+render();
+</script>
+</body>
+</html>
