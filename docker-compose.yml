@@ -1,0 +1,14 @@
+services:
+  api:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: sqlite:////data/routedesk.db
+      CORS_ORIGINS: "*"
+    volumes:
+      - routedesk_data:/data
+    restart: unless-stopped
+
+volumes:
+  routedesk_data:
